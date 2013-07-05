@@ -52,15 +52,21 @@ Player.prototype.isPointInBounds = function(point) {
 	if (!this.bounds)
 		return false;
 
-	minX = this.position.x - this.bounds.width / 2;
-	maxX = this.position.x + this.bounds.width / 2;
-	minY = this.position.y - this.bounds.height / 2;
-	maxY = this.positoin.y + this.bounds.height / 2;
+	// minX = this.position.x - this.bounds.width / 2;
+	// maxX = this.position.x + this.bounds.width / 2;
+	// minY = this.position.y - this.bounds.height / 2;
+	// maxY = this.position.y + this.bounds.height / 2;
+
+	minX = 0 - this.bounds.width / 2;
+	maxX = 0 + this.bounds.width / 2;
+	minY = 0 - this.bounds.height / 2;
+	maxY = 0 + this.bounds.height / 2;
 
 	isXInBounds = point.x >= minX && point.x <= maxX;
 	isYInBounds = point.y >= minY && point.y <= maxY;
 
-	return isYInBounds && isYInBounds;
+
+	return isXInBounds && isYInBounds;
 };
 
 module.exports = Player;

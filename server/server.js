@@ -20,13 +20,14 @@ function destroyPlayer(player) {
 function getOtherPlayers(player) {
 	otherPlayers = players.slice(0);
 	index = otherPlayers.indexOf(player);
+
 	if (index != -1)
 		otherPlayers.splice(index, 1);
 	return otherPlayers;
 }
 
 function getOtherPlayersWithPlayerInBounds(player) {
-	otherPlayers = getOtherPlayers();
+	otherPlayers = getOtherPlayers(player);
 	otherPlayersInBounds = [];
 	otherPlayers.forEach(function(testPlayer) {
 		isInBounds = testPlayer.isPointInBounds(player.position);
@@ -63,8 +64,7 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	newPlayer.on("didSetPosition", function() {
-		//otherPlayersInBounds = getOtherPlayersWithPlayerInBounds(this);
-		otherPlayersInBounds = getOtherPlayers(this);
+		otherPlayersInBounds = getOtherPlayersWithPlayerInBounds(this);
 		json = {
 			id: this.id,
 			position: this.position
