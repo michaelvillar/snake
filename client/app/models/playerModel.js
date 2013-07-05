@@ -4,7 +4,6 @@ var createCube = function(color) {
   var geometry = new THREE.CubeGeometry(1,1,0.6);
   var material = new THREE.MeshLambertMaterial({ color: color });
   var cube = new THREE.Mesh(geometry, material);
-  cube.position.z = 0.6
   return cube;
 }
 
