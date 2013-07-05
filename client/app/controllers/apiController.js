@@ -34,36 +34,3 @@ apiController.prototype.onPlayerPosition = function(json) {
 apiController.prototype.onPlayerDisconnect = function(json) {
   this.trigger('playerDidDisconnect',json);
 };
-
-apiController.prototype.onPlayers = function(json) {
-  var jsonPlayers = json.players;
-  var newPlayers = {}
-  for(var i in jsonPlayers) {
-    var jsonPlayer = jsonPlayers[i]
-    var player = this.players[jsonPlayer.id];
-    if(!player) {
-      player = createPlayer(false);
-      scene.add(player.cube);
-    }
-
-    var direction = null;
-    if(jsonPlayer.x != player.position.x) {
-      direction = { x: (jsonPlayer.x > player.position.x ? 1 : -1), y: 0, z: 0 };
-    }
-    else if(jsonPlayer.y != player.position.y) {
-      direction = { x: 0, y: (jsonPlayer.y > player.position.y ? 1 : -1), z: 0 };
-    }
-    if(direction)
-      player.setDirection(direction);
-    player.setPosition(jsonPlayer.x, jsonPlayer.y, jsonPlayer.z);
-
-    newPlayers[jsonPlayer.id] = player;
-  }
-  for(var id in this.players) {
-    if(!newPlayers[id]) {
-      var player = players[id]
-      player.destroy();
-    }
-  }
-  this.players = newPlayers;
-};
