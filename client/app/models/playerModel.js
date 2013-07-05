@@ -14,6 +14,7 @@ var playerModel = function(scene, isMePlayer) {
   this.path = new pathModel(this.scene, (isMePlayer ? 0xcfffcd : 0xfebbbe));
   this.direction = { x:0, y:0, z:0 };
   this.position = { x:0, y:0, z:0 };
+  this.positionned = false;
 };
 
 playerModel.prototype.attach = function() {
@@ -32,12 +33,15 @@ playerModel.prototype.move = function(x, y, z) {
 playerModel.prototype.setPosition = function(x, y, z) {
   this.path.move((x == this.cube.position.x ? Math.abs(y - this.position.y) : Math.abs(x - this.position.x)));
   this.position = { x: x, y: y, z: z };
+  this.positionned = true;
   this.cube.position.x = x;
   this.cube.position.y = y;
   this.cube.position.z = z;
 };
 
 playerModel.prototype.setDirection = function(direction) {
+  if(!this.positionned)
+    return;
   if(direction.x != this.direction.x || direction.y != this.direction.y) {
     var cube = this.path.attachCube(direction);
     cube.position.x = this.cube.position.x - direction.x * this.cube.scale.x / 2;

@@ -40,7 +40,6 @@ appController.prototype.playerPositionDidChange = function(json) {
 };
 
 appController.prototype.playerDidDisconnect = function(json) {
-  console.log(json)
   this.deletePlayerForId(json.id);
 };
 
