@@ -112,16 +112,19 @@ appController.prototype.initScene = function() {
 
   // Board
   var boardPlaneGeometry = new THREE.PlaneGeometry(200, 200, 50, 50)
-  var boardMaterial = new THREE.MeshLambertMaterial({ color: 0x232323 });
-  var boardMesh = new THREE.Mesh(boardPlaneGeometry, boardMaterial);
-  this.scene.add(boardMesh)
+  var texture = THREE.ImageUtils.loadTexture("/assets/images/grid.png", new THREE.UVMapping(), function() {
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat = new THREE.Vector2(100, 100);
+    var boardMaterial = new THREE.MeshLambertMaterial({ map: texture });
+    var boardMesh = new THREE.Mesh(boardPlaneGeometry, boardMaterial);
+    boardMesh.position.z = -0.3;
+    this.scene.add(boardMesh)
+  }.bind(this));
 
   // Light
-  var pointLight =  new THREE.PointLight(0xFFFFFF);
-  pointLight.position.x = 0;
-  pointLight.position.y = -5;
-  pointLight.position.z = 10;
-  this.scene.add(pointLight);
+  this.pointLight =  new THREE.PointLight(0xFFFFFF);
+  this.scene.add(this.pointLight);
 };
 
 appController.prototype.render = function() {
