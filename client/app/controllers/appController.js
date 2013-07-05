@@ -3,6 +3,16 @@ var boostModel = require('boostModel');
 var playerModel = require('playerModel');
 
 var SPEED = 10;
+var CAMERA_OFFSET = {
+  x: 0,
+  y: -15,
+  z: 20
+};
+var LIGHT_OFFSET = {
+  x: 0,
+  y: -5,
+  z: 10
+};
 
 var appController = function() {
   this.initScene();
@@ -93,8 +103,6 @@ appController.prototype.initScene = function() {
 
   // Camera
   this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  this.camera.position.z = 20;
-  this.camera.position.y = -15;
   this.camera.rotation.x = 0.5;
 
   // Render
@@ -139,7 +147,18 @@ appController.prototype.tick = function() {
                this.me.direction.y * distanceToMove,
                this.me.direction.z * distanceToMove)
 
+  this.moveCameraToPosition(this.me.position, this.camera.position.z == 0);
+
   this.api.setPosition(this.me.cube.position);
 
   this.lastTickDate = this.currentTickDate
+};
+
+appController.prototype.moveCameraToPosition = function(position, force) {
+  var coords = ["x", "y", "z"];
+  for(var i in coords) {
+    var coord = coords[i];
+    this.camera.position[coord] = position[coord] + CAMERA_OFFSET[coord];
+    this.pointLight.position[coord] = position[coord] + LIGHT_OFFSET[coord];
+  }
 };
