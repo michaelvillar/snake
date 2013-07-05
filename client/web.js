@@ -23,14 +23,28 @@ postProcessor.prototype.evaluate = function(context, locals) {
 };
 environment.registerPostProcessor('application/javascript', postProcessor);
 
-var app = connect();
-app.use('/assets', Mincer.createServer(environment));
-app.use(function (req, res) {
-  fs.readFile("./index.html", "binary", function(err, file) {
+var sendFile = function(filename, res) {
+  fs.readFile(filename, "binary", function(err, file) {
     res.writeHead(200);
     res.write(file, "binary");
     res.end();
   });
+};
+
+var app = connect();
+app.use('/assets', Mincer.createServer(environment));
+app.use(function (req, res) {
+  console.log(req.url)
+  if(req.url == '/style.css')
+    sendFile("./style.css", res);
+  else if(req.url == '/')
+    sendFile("./index.html", res);
+  else {
+    res.writeHead(302, {
+      'Location': '/'
+    });
+    res.end();
+  }
 });
 
 http.createServer(app).listen(3000);

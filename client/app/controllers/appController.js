@@ -1,4 +1,5 @@
 var apiController = require('apiController');
+var hudController = require('hudController');
 var boostModel = require('boostModel');
 var playerModel = require('playerModel');
 
@@ -16,6 +17,11 @@ var LIGHT_OFFSET = {
 
 var appController = function() {
   this.initScene();
+  this.boost = new boostModel();
+
+  this.hud = new hudController(this.boost);
+  document.body.appendChild(this.hud.el);
+
   this.players = {};
   this.me = new playerModel(this.scene, true);
   this.me.attach();
@@ -26,8 +32,6 @@ var appController = function() {
   this.api.setBounds(150, 150);
   this.api.on('playerPositionDidChange', this.playerPositionDidChange.bind(this));
   this.api.on('playerDidDisconnect', this.playerDidDisconnect.bind(this));
-
-  this.boost = new boostModel();
 
   this.render();
 
@@ -112,7 +116,7 @@ appController.prototype.initScene = function() {
 
   // Board
   var boardPlaneGeometry = new THREE.PlaneGeometry(200, 200, 50, 50)
-  var texture = THREE.ImageUtils.loadTexture("/assets/images/grid.png", new THREE.UVMapping(), function() {
+  var texture = THREE.ImageUtils.loadTexture("/assets/images/grid3.png", new THREE.UVMapping(), function() {
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat = new THREE.Vector2(100, 100);
