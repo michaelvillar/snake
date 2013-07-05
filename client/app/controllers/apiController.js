@@ -19,6 +19,13 @@ apiController.prototype.setPosition = function(position) {
   })
 };
 
+apiController.prototype.setBounds = function(width, height) {
+  this.socket.emit("setBounds", {
+    width: width,
+    height: height
+  });
+}
+
 // Inbound API Request Handlers
 apiController.prototype.onPlayerPosition = function(json) {
   this.trigger('playerPositionDidChange',json);

@@ -13,6 +13,7 @@ var appController = function() {
   this.lastTickDate = new Date();
 
   this.api = new apiController();
+  this.api.setBounds(100, 100);
   this.api.on('playerPositionDidChange', this.playerPositionDidChange.bind(this));
   this.api.on('playerDidDisconnect', this.playerDidDisconnect.bind(this));
 
