@@ -43,6 +43,18 @@ function sendToPlayers(players, message, json) {
 	});
 }
 
+function doesPlayerCollide(player) {
+	testPlayers = otherPlayersInBounds.slice(0);
+	testPlayers.push(player);
+	for (var i in testPlayers) {
+		testPlayer = testPlayers[i];
+		if (testPlayer.doesKillPlayer(player)) {
+			return testPlayer;
+		}
+	}
+	return null;
+}
+
 ///////////////////////////////////////
 ///////////////////////////////////////
 
@@ -69,6 +81,9 @@ io.sockets.on('connection', function (socket) {
 			id: this.id,
 			position: this.position
 		};
+		if (doesPlayerCollide(this)) {
+			console.log("die");
+		}
 		sendToPlayers(otherPlayersInBounds, "player/position", json);
 	});
 });
