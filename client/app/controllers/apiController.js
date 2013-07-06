@@ -3,7 +3,7 @@ var eventEmitter = require('eventEmitter');
 var apiController = function() {
   eventEmitter.call(this);
 
-  this.socket = io.connect('http://localhost:5000');
+  this.socket = io.connect('http://192.168.0.8:5000');
   this.socket.on("player/position", this.onPlayerPosition.bind(this));
   this.socket.on("player/disconnect", this.onPlayerDisconnect.bind(this));
 };
