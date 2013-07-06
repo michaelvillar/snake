@@ -14,7 +14,8 @@ var players = [];
 
 function destroyPlayer(player) {
 	index = players.indexOf(player);
-	players.splice(index, 1);
+	if (index != -1)
+		players.splice(index, 1);
 }
 
 function getOtherPlayers(player) {
@@ -37,14 +38,18 @@ function getOtherPlayersWithPlayerInBounds(player) {
 	return otherPlayersInBounds;
 }
 
+function sendToPlayer(player, message, json) {
+	player.socket.emit(message, json);
+};
+
 function sendToPlayers(players, message, json) {
 	players.forEach(function(player) {
-		player.socket.emit(message, json);
+		sendToPlayer(player, message, json);
 	});
 }
 
 function doesPlayerCollide(player) {
-	testPlayers = otherPlayersInBounds.slice(0);
+	testPlayers = getOtherPlayersWithPlayerInBounds(player).slice(0);
 	testPlayers.push(player);
 	for (var i in testPlayers) {
 		testPlayer = testPlayers[i];
@@ -60,6 +65,7 @@ function doesPlayerCollide(player) {
 
 io.sockets.on('connection', function (socket) {
 	newPlayer = new Player(socket);
+	sendToPlayer(newPlayer, "player", {id: newPlayer.id});
 	newPlayer.startListening();
 	players.push(newPlayer);
 
@@ -76,14 +82,22 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	newPlayer.on("didSetPosition", function() {
-		otherPlayersInBounds = getOtherPlayersWithPlayerInBounds(this);
-		json = {
-			id: this.id,
-			position: this.position
-		};
-		if (doesPlayerCollide(this)) {
-			console.log("die");
+		winner = doesPlayerCollide(this);
+		if (winner) {
+			json = {
+				winner: winner.id,
+				looser: this.id
+			};
+			sendToPlayers(players, "player/collision", json);
+			destroyPlayer(this);
 		}
-		sendToPlayers(otherPlayersInBounds, "player/position", json);
+		else {
+			otherPlayersInBounds = getOtherPlayersWithPlayerInBounds(this);
+			json = {
+				id: this.id,
+				position: this.position
+			};
+			sendToPlayers(otherPlayersInBounds, "player/position", json);
+		}
 	});
 });
