@@ -1,3 +1,4 @@
+var eventEmitter = require('eventEmitter');
 var pathModel = require('pathModel');
 
 var DISTANCE_FROM_TURN_TRESHHOLD = 1.2;
@@ -10,6 +11,7 @@ var createCube = function(color) {
 }
 
 var playerModel = function(scene, playerJson, isMePlayer) {
+  eventEmitter.call(this);
   this.scene = scene;
   this.id = playerJson.id;
   this.cube = createCube((isMePlayer ? 0x00ff00 : 0xff0000));
@@ -20,6 +22,8 @@ var playerModel = function(scene, playerJson, isMePlayer) {
   this.distanceFromTurn = 0;
   this.nextDirection = null;
 };
+
+playerModel.prototype = new eventEmitter();
 
 playerModel.prototype.attach = function() {
   this.scene.add(this.cube);
@@ -75,4 +79,5 @@ playerModel.prototype.setDirection = function(direction) {
   this.nextDirection = null;
   this.direction = direction;
   this.distanceFromTurn = 0;
+  this.trigger("playerDidChangeDirection");
 };
