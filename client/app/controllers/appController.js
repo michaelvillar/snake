@@ -23,15 +23,18 @@ var appController = function() {
   document.body.appendChild(this.hud.el);
 
   this.players = {};
-  this.me = new playerModel(this.scene, true);
-  this.me.attach();
-
-  this.lastTickDate = new Date();
 
   this.api = new apiController();
   this.api.setBounds(150, 150);
+  this.api.on('playerDidConnect', this.playerDidConnect.bind(this))
+};
+
+appController.prototype.init = function() {
+  this.lastTickDate = new Date();
+
   this.api.on('playerPositionDidChange', this.playerPositionDidChange.bind(this));
   this.api.on('playerDidDisconnect', this.playerDidDisconnect.bind(this));
+  this.api.on('playerPositionDidCollision', this.playerPositionDidCollision.bind(this));
 
   this.render();
 
@@ -39,6 +42,25 @@ var appController = function() {
 };
 
 // API Handler
+appController.prototype.playerDidConnect = function(json) {
+  this.me = new playerModel(this.scene, json, true);
+  this.me.attach();
+
+  this.init();
+};
+
+appController.prototype.playerPositionDidCollision = function(json) {
+  var winnerId = json.winner;
+  var looserId = json.looser;
+  if(this.me.id == looserId) {
+    alert("You lost!")
+    window.location.reload();
+  }
+  else {
+    this.deletePlayerForId(looserId);
+  }
+};
+
 appController.prototype.playerPositionDidChange = function(json) {
   var player = this.getOrCreatePlayerForId(json.id);
   var position = json.position;
@@ -62,7 +84,7 @@ appController.prototype.playerDidDisconnect = function(json) {
 appController.prototype.getOrCreatePlayerForId = function(id) {
   var player = this.players[id];
   if(!player) {
-    player = new playerModel(this.scene, false);
+    player = new playerModel(this.scene, { id: id }, false);
     player.attach();
     this.players[id] = player;
   }

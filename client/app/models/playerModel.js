@@ -7,8 +7,9 @@ var createCube = function(color) {
   return cube;
 }
 
-var playerModel = function(scene, isMePlayer) {
+var playerModel = function(scene, playerJson, isMePlayer) {
   this.scene = scene;
+  this.id = playerJson.id;
   this.cube = createCube((isMePlayer ? 0x00ff00 : 0xff0000));
   this.path = new pathModel(this.scene, (isMePlayer ? 0xcfffcd : 0xfebbbe));
   this.direction = { x:0, y:0, z:0 };

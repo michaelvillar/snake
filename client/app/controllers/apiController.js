@@ -4,8 +4,10 @@ var apiController = function() {
   eventEmitter.call(this);
 
   this.socket = io.connect('http://192.168.0.8:5000');
+  this.socket.on("player", this.onPlayer.bind(this));
   this.socket.on("player/position", this.onPlayerPosition.bind(this));
   this.socket.on("player/disconnect", this.onPlayerDisconnect.bind(this));
+  this.socket.on("player/collision", this.onPlayerCollision.bind(this));
 };
 
 apiController.prototype = new eventEmitter();
@@ -27,6 +29,14 @@ apiController.prototype.setBounds = function(width, height) {
 }
 
 // Inbound API Request Handlers
+apiController.prototype.onPlayer = function(json) {
+  this.trigger('playerDidConnect',json);
+};
+
+apiController.prototype.onPlayerCollision = function(json) {
+  this.trigger('playerPositionDidCollision',json);
+};
+
 apiController.prototype.onPlayerPosition = function(json) {
   this.trigger('playerPositionDidChange',json);
 };
