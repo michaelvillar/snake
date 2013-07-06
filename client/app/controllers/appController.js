@@ -137,11 +137,12 @@ appController.prototype.initScene = function() {
   document.body.appendChild(this.renderer.domElement);
 
   // Board
-  var boardPlaneGeometry = new THREE.PlaneGeometry(200, 200, 50, 50)
+  var boardSize = 60;
+  var boardPlaneGeometry = new THREE.PlaneGeometry(boardSize, boardSize, boardSize / 4, boardSize / 4);
   var texture = THREE.ImageUtils.loadTexture("/assets/images/grid3.png", new THREE.UVMapping(), function() {
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat = new THREE.Vector2(100, 100);
+    texture.repeat = new THREE.Vector2(boardSize / 2, boardSize / 2);
     var boardMaterial = new THREE.MeshLambertMaterial({ map: texture });
     var boardMesh = new THREE.Mesh(boardPlaneGeometry, boardMaterial);
     boardMesh.position.z = -0.3;
