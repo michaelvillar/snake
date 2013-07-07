@@ -3,6 +3,7 @@ var textures = require('textures');
 var obstacleModel = function(scene, position, size) {
   this.scene = scene;
   this.position = position;
+  this.size = size;
 
   var geometry = new THREE.CubeGeometry(size.x,size.y,size.z);
   this.material = new THREE.MeshLambertMaterial({ map: textures.obstacle, transparent: true, opacity: 0.0 });
@@ -10,7 +11,7 @@ var obstacleModel = function(scene, position, size) {
   this.mesh = new THREE.Mesh(geometry, this.material);
   this.mesh.position.x = position.x;
   this.mesh.position.y = position.y;
-  this.mesh.position.z = - size.z / 2;
+  this.mesh.position.z = - size.z / 2 - 0.3;
 
   this.appearTween = null;
 };
@@ -37,7 +38,7 @@ obstacleModel.prototype.appear = function() {
 
   var posTweenArgs = {z:this.mesh.position.z};
   this.appearTween = new TWEEN.Tween(posTweenArgs);
-  this.appearTween.to({z:this.position.z}, 1000);
+  this.appearTween.to({z:this.position.z}, 3000);
   this.appearTween.easing(TWEEN.Easing.Quadratic.InOut);
   this.appearTween.onUpdate(function() {
     this.mesh.position.z = posTweenArgs.z;
