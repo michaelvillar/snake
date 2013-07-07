@@ -42,7 +42,7 @@ var appController = function() {
   this.api.setBounds(150, 150);
   this.api.on('playerDidConnect', this.playerDidConnect.bind(this));
   this.api.on('didReceiveError', function() {
-    this.playerDidConnect({ id: 1 });
+    this.playerDidConnect({ id: 1, position: {x:0,y:0,z:0} });
   }.bind(this));
 };
 
@@ -61,6 +61,7 @@ appController.prototype.init = function() {
 // API Handler
 appController.prototype.playerDidConnect = function(json) {
   this.me = new playerModel(this.scene, json, true);
+  this.me.setPosition(json.position.x, json.position.y, json.position.z);
   this.me.appear();
   this.me.attach();
 
