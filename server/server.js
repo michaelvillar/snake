@@ -17,6 +17,6 @@ var playersController = new PlayersController();
 ///////////////////////////////////////
 
 io.sockets.on('connection', function (socket) {
-	newPlayer = new Player(socket);
+	var newPlayer = new Player(socket);
 	playersController.addPlayer(newPlayer);
 });

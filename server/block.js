@@ -7,8 +7,8 @@ var block = function(center, length, thickness, direction) {
 };
 
 block.prototype.containsPoint = function(point) {
-	isInX = (point.x >= (this.center.x - this.getWidth() / 2) && (point.x <= (this.center.x + this.getWidth() / 2)));
-	isInY = (point.y >= (this.center.y - this.getHeight() / 2) && (point.y <= (this.center.y + this.getHeight() / 2)));
+	var isInX = (point.x >= (this.center.x - this.getWidth() / 2) && (point.x <= (this.center.x + this.getWidth() / 2)));
+	var isInY = (point.y >= (this.center.y - this.getHeight() / 2) && (point.y <= (this.center.y + this.getHeight() / 2)));
 	return isInX && isInY;
 };
 

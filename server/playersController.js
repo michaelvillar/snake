@@ -20,7 +20,7 @@ PlayersController.prototype.addPlayer = function(player) {
 };
 
 PlayersController.prototype.removePlayer = function(player) {
-	index = this.players.indexOf(player);
+	var index = this.players.indexOf(player);
 	if (index != -1) {
 		this.players.splice(index, 1);
 		this.stopListeningPlayer(player);
@@ -34,8 +34,8 @@ PlayersController.prototype.removePlayers = function(players) {
 }
 
 PlayersController.prototype.playersExceptPlayer = function(player) {
-	otherPlayers = this.players.slice(0);
-	index = otherPlayers.indexOf(player);
+	var otherPlayers = this.players.slice(0);
+	var index = otherPlayers.indexOf(player);
 
 	if (index != -1)
 		otherPlayers.splice(index, 1);
@@ -43,10 +43,10 @@ PlayersController.prototype.playersExceptPlayer = function(player) {
 };
 
 PlayersController.prototype.playersInBoundsOfPlayer = function(player) {
-	otherPlayers = this.playersExceptPlayer(player);
-	otherPlayersInBounds = [];
+	var otherPlayers = this.playersExceptPlayer(player);
+	var otherPlayersInBounds = [];
 	otherPlayers.forEach(function(testPlayer) {
-		isInBounds = testPlayer.boundsContainPoint(player.position);
+		var isInBounds = testPlayer.boundsContainPoint(player.position);
 		if (isInBounds)
 			otherPlayersInBounds.push(testPlayer);
 	})
@@ -60,7 +60,7 @@ PlayersController.prototype.collisionWithPlayer = function(player) {
 	otherPlayers.push(player);
 	var headPoints = player.headPoints();
 	for (var i in otherPlayers) {
-		otherPlayer = otherPlayers[i];
+		var otherPlayer = otherPlayers[i];
 		if (otherPlayer.invincible())
 			continue;
 
@@ -78,7 +78,7 @@ PlayersController.prototype.collisionWithPlayer = function(player) {
 
 PlayersController.prototype.sendTo = function(players, message, json) {
 	if (players instanceof Player) {
-		player = players;
+		var player = players;
 		player.socket.emit(message, json);
 	}
 	else if (players instanceof Array) {

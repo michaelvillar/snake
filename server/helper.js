@@ -1,11 +1,11 @@
 
 module.exports.directionFromPositions = function(position1, position2) {
-	unNormalizedDirection = {
+	var unNormalizedDirection = {
 		x: position2.x - position1.x,
 		y: position2.y - position1.y,
 		z: position2.z - position1.z
 	};
-	direction = {};
+	var direction = {};
 	for (key in unNormalizedDirection) {
 		if (unNormalizedDirection[key] > 0)
 			direction[key] = 1;

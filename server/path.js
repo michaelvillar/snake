@@ -15,7 +15,7 @@ var path = function(headStartPosition, headOffset) {
 };
 
 path.prototype.incrementSize = function(direction, increment) {
-	decrement = 0;
+	var decrement = 0;
 	if (this.maxSize - this.totalSize == 0) {
 		decrement = increment;
 	}
@@ -29,24 +29,24 @@ path.prototype.incrementSize = function(direction, increment) {
 
 	//Add or increment last block
 	if (this.blocks.length == 0) {
-		newBlock = this.createNextBlock(direction, increment);
+		var newBlock = this.createNextBlock(direction, increment);
 		this.blocks.push(newBlock);
 	}
 	else {
-		lastBlock = this.blocks[this.blocks.length - 1];
+		var lastBlock = this.blocks[this.blocks.length - 1];
 		if (this.currentDirection.x == direction.x && this.currentDirection.y == direction.y) {
 			lastBlock.incrementSize(increment);
 		}
 		else {
-			newBlock = this.createNextBlock(direction, increment);
+			var newBlock = this.createNextBlock(direction, increment);
 			this.blocks.push(newBlock);
 		}
 	}
 
 	//Decrement first block
 	while (this.blocks.length > 0 && decrement > 0) {
-		firstBlock = this.blocks[0];
-		toDecrement = firstBlock.length < decrement ? firstBlock.length : decrement;
+		var firstBlock = this.blocks[0];
+		var toDecrement = firstBlock.length < decrement ? firstBlock.length : decrement;
 		firstBlock.decrementSize(toDecrement);
 		if (firstBlock.length <= 0)
 			this.blocks.splice(0, 1);
@@ -57,7 +57,7 @@ path.prototype.incrementSize = function(direction, increment) {
 
 path.prototype.containsPoint = function(point) {
 	for (var i in this.blocks) {
-		block = this.blocks[i];
+		var block = this.blocks[i];
 		if (block.containsPoint(point))
 			return true;
 	}
@@ -66,27 +66,28 @@ path.prototype.containsPoint = function(point) {
 
 path.prototype.createNextBlock = function(direction, increment) {
 	if (direction.x == 0) {
-		width = this.thickness;
-		height = increment;
+		var width = this.thickness;
+		var height = increment;
 	}
 	else {
-		width = increment;
-		height = this.thickness;
+		var width = increment;
+		var height = this.thickness;
 	}
 
 	if (this.blocks.length == 0) {
-		center = {
+		var center = {
 			x: this.headStartPosition.x + direction.x * ((width - this.thickness) / 2),
 			y: this.headStartPosition.y + direction.y * ((height - this.thickness) / 2)
 		};
 	}
 	else {
-		center = {
+		var lastBlock = this.blocks[this.blocks.length - 1]
+		var center = {
 			x: lastBlock.center.x + this.currentDirection.x * ((lastBlock.getWidth() + width) / 2) + (direction.x * ((width - lastBlock.getWidth()) / 2)),
 			y: lastBlock.center.y + this.currentDirection.y * ((lastBlock.getHeight() + height) / 2) + (direction.y * ((height - lastBlock.getHeight()) / 2))
 		};
 	}
-	newBlock = new Block(center, increment, this.thickness, direction);
+	var newBlock = new Block(center, increment, this.thickness, direction);
 	return newBlock;
 }
 

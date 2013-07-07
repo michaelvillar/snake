@@ -54,24 +54,24 @@ Player.prototype.boundsContainPoint = function(point) {
 	if (!this.bounds)
 		return false;
 
-	minX = this.position.x - this.bounds.width / 2;
-	maxX = this.position.x + this.bounds.width / 2;
-	minY = this.position.y - this.bounds.height / 2;
-	maxY = this.position.y + this.bounds.height / 2;
+	var minX = this.position.x - this.bounds.width / 2;
+	var maxX = this.position.x + this.bounds.width / 2;
+	var minY = this.position.y - this.bounds.height / 2;
+	var maxY = this.position.y + this.bounds.height / 2;
 
-	isXInBounds = point.x >= minX && point.x <= maxX;
-	isYInBounds = point.y >= minY && point.y <= maxY;
+	var isXInBounds = point.x >= minX && point.x <= maxX;
+	var isYInBounds = point.y >= minY && point.y <= maxY;
 
 	return isXInBounds && isYInBounds;
 };
 
 Player.prototype.headPoints = function() {
-	headPoint1 = {
+	var headPoint1 = {
 		x: this.position.x + (this.direction.x * this.headThickness / 2) + (this.direction.y * this.headThickness / 2),
 		y: this.position.y + (this.direction.y * this.headThickness / 2) + (this.direction.x * this.headThickness / 2),
 		z: 0
 	}
-	headPoint2 = {
+	var headPoint2 = {
 		x: this.position.x + (this.direction.x * this.headThickness / 2) - (this.direction.y * this.headThickness / 2),
 		y: this.position.y + (this.direction.y * this.headThickness / 2) - (this.direction.x * this.headThickness / 2),
 		z: 0
@@ -84,12 +84,12 @@ Player.prototype.containsPointInPath = function(point) {
 };
 
 Player.prototype.containsPointInHead = function(point) {
-	minX = this.position.x - this.headThickness / 2;
-	maxX = this.position.x + this.headThickness / 2;
-	minY = this.position.y - this.headThickness / 2;
-	maxY = this.position.y + this.headThickness / 2;
-	isInX = point.x >= minX && point.x <= maxX;
-	isInY = point.y >= minY && point.y <= maxY;
+	var minX = this.position.x - this.headThickness / 2;
+	var maxX = this.position.x + this.headThickness / 2;
+	var minY = this.position.y - this.headThickness / 2;
+	var maxY = this.position.y + this.headThickness / 2;
+	var isInX = point.x >= minX && point.x <= maxX;
+	var isInY = point.y >= minY && point.y <= maxY;
 	return isInX && isInY;
 };
 
