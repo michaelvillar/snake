@@ -27,7 +27,7 @@ PlayersController.prototype.addPlayerWithSocket = function(socket) {
 			var index = Math.round(Math.random() * (this.players.length - 1));
 			var otherPlayer = this.players[index];
 			var randomAngle = Math.random() * Math.PI;
-			var randomRadius = 5 + Math.random() * 5;
+			var randomRadius = 10 + Math.random() * 10;
 			position.x = otherPlayer.position.x + (Math.cos(randomRadius) * randomRadius);
 			position.y = otherPlayer.position.y + (Math.sin(randomRadius) * randomRadius);
 
