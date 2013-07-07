@@ -86,11 +86,11 @@ appController.prototype.playerPositionDidChange = function(json) {
   var player = this.getOrCreatePlayerForId(json.id);
   var position = json.position;
   var direction = null;
-  if(position.x != player.position.x) {
-    direction = { x: (position.x > player.position.x ? 1 : -1), y: 0, z: 0 };
+  if(position.x != player.getPosition().x) {
+    direction = { x: (position.x > player.getPosition().x ? 1 : -1), y: 0, z: 0 };
   }
-  else if(position.y != player.position.y) {
-    direction = { x: 0, y: (position.y > player.position.y ? 1 : -1), z: 0 };
+  else if(position.y != player.getPosition().y) {
+    direction = { x: 0, y: (position.y > player.getPosition().y ? 1 : -1), z: 0 };
   }
   if(direction)
     player.setDirection(direction);
@@ -184,11 +184,11 @@ appController.prototype.tick = function() {
   this.me.move(this.me.direction.x * distanceToMove,
                this.me.direction.y * distanceToMove,
                this.me.direction.z * distanceToMove)
-  this.board.updateCenter(this.me.position);
+  this.board.updateCenter(this.me.getPosition());
 
-  this.moveCameraToPosition(this.me.position, this.camera.position.z == 0);
+  this.moveCameraToPosition(this.me.getPosition(), this.camera.position.z == 0);
 
-  this.api.setPosition(this.me.cube.position);
+  this.api.setPosition(this.me.getPosition());
 
   this.lastTickDate = this.currentTickDate
 

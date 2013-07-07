@@ -15,6 +15,7 @@ boostModel.prototype = new eventEmitter();
 
 boostModel.prototype.fill = function() {
   this.seconds = 1.0;
+  this.trigger('boostModelDidChangeSeconds');
 };
 
 boostModel.prototype.canBeTriggered = function() {

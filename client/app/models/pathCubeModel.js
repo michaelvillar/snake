@@ -1,23 +1,11 @@
-var createCube = function(color) {
-  var geometry = new THREE.CubeGeometry(1,1,0.6);
-  var material = new THREE.MeshLambertMaterial({ color: color });
-  var cube = new THREE.Mesh(geometry, material);
-  return cube;
-}
+var cubeModel = require('cubeModel');
 
 var pathCubeModel = function(scene, color, direction) {
-  this.scene = scene;
-  this.mesh = createCube(color);
+  cubeModel.apply(this, [scene, color]);
   this.direction = direction;
 };
 
-pathCubeModel.prototype.attach = function() {
-  this.scene.add(this.mesh);
-};
-
-pathCubeModel.prototype.detach = function() {
-  this.scene.remove(this.mesh);
-};
+pathCubeModel.prototype = new cubeModel();
 
 pathCubeModel.prototype.decreaseSize = function(decr) {
   return this.increaseSize(-decr);

@@ -1,20 +1,14 @@
 var eventEmitter = require('eventEmitter');
 var pathModel = require('pathModel');
+var cubeModel = require('cubeModel');
 
 var DISTANCE_FROM_TURN_TRESHHOLD = 1.2;
-
-var createCube = function(color) {
-  var geometry = new THREE.CubeGeometry(1,1,0.6);
-  var material = new THREE.MeshLambertMaterial({ color: color });
-  var cube = new THREE.Mesh(geometry, material);
-  return cube;
-}
 
 var playerModel = function(scene, playerJson, isMePlayer) {
   eventEmitter.call(this);
   this.scene = scene;
   this.id = playerJson.id;
-  this.cube = createCube((isMePlayer ? 0x00ff00 : 0xff0000));
+  this.cube = new cubeModel(this.scene, (isMePlayer ? 0x00ff00 : 0xff0000));
   this.path = new pathModel(this.scene, (isMePlayer ? 0xcfffcd : 0xfebbbe));
   this.direction = { x:0, y:0, z:0 };
   this.position = { x:0, y:0, z:0 };
@@ -26,27 +20,29 @@ var playerModel = function(scene, playerJson, isMePlayer) {
 playerModel.prototype = new eventEmitter();
 
 playerModel.prototype.attach = function() {
-  this.scene.add(this.cube);
+  this.cube.attach();
 };
 
 playerModel.prototype.detach = function() {
-  this.scene.remove(this.cube);
+  this.cube.detach();
   this.path.detach();
 };
 
 playerModel.prototype.move = function(x, y, z) {
-  this.setPosition(this.cube.position.x + x, this.cube.position.y + y, this.cube.position.z + z);
+  this.setPosition(this.cube.getPosition().x + x, this.cube.getPosition().y + y, this.cube.getPosition().z + z);
+};
+
+playerModel.prototype.getPosition = function() {
+  return this.cube.getPosition();
 };
 
 playerModel.prototype.setPosition = function(x, y, z) {
   var yDelta = Math.abs(y - this.position.y);
   var xDelta = Math.abs(x - this.position.x);
-  this.path.move((x == this.cube.position.x ? yDelta : xDelta));
+  this.path.move((x == this.cube.getPosition().x ? yDelta : xDelta));
   this.position = { x: x, y: y, z: z };
   this.positionned = true;
-  this.cube.position.x = x;
-  this.cube.position.y = y;
-  this.cube.position.z = z;
+  this.cube.setPosition({x:x, y:y, z:z});
 
   this.distanceFromTurn += xDelta + yDelta;
   if(this.distanceFromTurn >= DISTANCE_FROM_TURN_TRESHHOLD && this.nextDirection)
@@ -73,8 +69,8 @@ playerModel.prototype.setDirection = function(direction) {
 
   if(direction.x != this.direction.x || direction.y != this.direction.y) {
     var cube = this.path.attachCube(direction);
-    cube.position.x = this.cube.position.x - direction.x * this.cube.scale.x / 2;
-    cube.position.y = this.cube.position.y - direction.y * this.cube.scale.y / 2;
+    cube.position.x = this.cube.getPosition().x - direction.x * this.cube.scale().x / 2;
+    cube.position.y = this.cube.getPosition().y - direction.y * this.cube.scale().y / 2;
   }
   this.nextDirection = null;
   this.direction = direction;
