@@ -13,6 +13,10 @@ var boostModel = function() {
 
 boostModel.prototype = new eventEmitter();
 
+boostModel.prototype.fill = function() {
+  this.seconds = 1.0;
+};
+
 boostModel.prototype.canBeTriggered = function() {
   return this.seconds >= 0.2;
 };

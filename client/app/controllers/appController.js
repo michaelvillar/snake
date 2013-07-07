@@ -72,7 +72,13 @@ appController.prototype.playerPositionDidCollision = function(json) {
     window.location.reload();
   }
   else {
+    // This player is dead
     this.deletePlayerForId(looserId);
+
+    if(this.me.id == winnerId) {
+      // Reset Boost
+      this.boost.fill();
+    }
   }
 };
 
