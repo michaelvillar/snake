@@ -4,6 +4,7 @@ var boostModel = require('boostModel');
 var scoreModel = require('scoreModel');
 var playerModel = require('playerModel');
 var boardModel = require('boardModel');
+var eventEmitter = require('eventEmitter');
 
 var SPEED = 10;
 var CAMERA_OFFSET = {
@@ -25,6 +26,8 @@ stats.domElement.style.top = '0px';
 document.body.appendChild( stats.domElement );
 
 var appController = function() {
+  eventEmitter.call(this);
+
   this.initScene();
 
   this.board = new boardModel(this.scene);
@@ -52,6 +55,8 @@ var appController = function() {
   }.bind(this));
 };
 
+appController.prototype = new eventEmitter();
+
 appController.prototype.init = function() {
   this.lastTickDate = new Date();
 
@@ -70,6 +75,8 @@ appController.prototype.playerDidConnect = function(json) {
   this.me.setPosition(json.position.x, json.position.y, json.position.z);
   this.me.appear();
   this.me.attach();
+
+  this.trigger('meDidChange');
 
   this.init();
 };

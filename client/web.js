@@ -31,12 +31,13 @@ var sendFile = function(filename, res) {
   });
 };
 
+var files = ["/index.html", "/style.css", "/bot.html"];
+
 var app = connect();
 app.use('/assets', Mincer.createServer(environment));
 app.use(function (req, res) {
-  console.log(req.url)
-  if(req.url == '/style.css')
-    sendFile("./style.css", res);
+  if(files.indexOf(req.url) != -1)
+    sendFile("." + req.url, res);
   else if(req.url == '/')
     sendFile("./index.html", res);
   else {

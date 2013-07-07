@@ -1,13 +1,17 @@
 <html>
   <head>
-    <title>Snake</title>
+    <title>Bot</title>
     <link rel="stylesheet" type="text/css" href="./style.css" />
   </head>
   <body>
     <script src="./assets/app.nomodule.js"></script>
     <script type="text/javascript">
       var appController = require('appController');
-      new appController;
+      var squareBot = require('squareBot');
+
+      var app = new appController;
+      var bot = new squareBot(app);
+      bot.start();
     </script>
   </body>
 </html>
