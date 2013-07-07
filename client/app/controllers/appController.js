@@ -160,6 +160,11 @@ appController.prototype.initScene = function() {
   this.renderer = new THREE.WebGLRenderer({ antialias: false });
   this.renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(this.renderer.domElement);
+  window.addEventListener('resize', function() {
+    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    this.camera.rotation.x = 0.5;
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+  }.bind(this));
 
   // Light
   this.pointLight =  new THREE.PointLight(0xFFFFFF);
