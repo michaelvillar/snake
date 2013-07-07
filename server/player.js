@@ -65,22 +65,32 @@ Player.prototype.boundsContainPoint = function(point) {
 	return isXInBounds && isYInBounds;
 };
 
-Player.prototype.collisionPoints = function() {
-	collisionPoint1 = {
+Player.prototype.headPoints = function() {
+	headPoint1 = {
 		x: this.position.x + (this.direction.x * this.headThickness / 2) + (this.direction.y * this.headThickness / 2),
 		y: this.position.y + (this.direction.y * this.headThickness / 2) + (this.direction.x * this.headThickness / 2),
 		z: 0
 	}
-	collisionPoint2 = {
+	headPoint2 = {
 		x: this.position.x + (this.direction.x * this.headThickness / 2) - (this.direction.y * this.headThickness / 2),
 		y: this.position.y + (this.direction.y * this.headThickness / 2) - (this.direction.x * this.headThickness / 2),
 		z: 0
 	}
-	return [collisionPoint1, collisionPoint2];
+	return [headPoint1, headPoint2];
 };
 
 Player.prototype.containsPointInPath = function(point) {
 	return this.path.containsPoint(point);
+};
+
+Player.prototype.containsPointInHead = function(point) {
+	minX = this.position.x - this.headThickness / 2;
+	maxX = this.position.x + this.headThickness / 2;
+	minY = this.position.y - this.headThickness / 2;
+	maxY = this.position.y + this.headThickness / 2;
+	isInX = point.x >= minX && point.x <= maxX;
+	isInY = point.y >= minY && point.y <= maxY;
+	return isInX && isInY;
 };
 
 Player.prototype.invincible = function() {

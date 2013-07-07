@@ -27,6 +27,12 @@ PlayersController.prototype.removePlayer = function(player) {
 	}
 };
 
+PlayersController.prototype.removePlayers = function(players) {
+	players.forEach((function(player) {
+		this.removePlayer(player);
+	}).bind(this));
+}
+
 PlayersController.prototype.playersExceptPlayer = function(player) {
 	otherPlayers = this.players.slice(0);
 	index = otherPlayers.indexOf(player);
@@ -47,20 +53,25 @@ PlayersController.prototype.playersInBoundsOfPlayer = function(player) {
 	return otherPlayersInBounds;
 };
 
-PlayersController.prototype.deadPlayersBecauseOfPlayer = function(player) {
+PlayersController.prototype.collisionWithPlayer = function(player) {
 	if (player.invincible())
 		return null;
-
-	testPlayers = this.playersInBoundsOfPlayer(player).slice(0);
-	testPlayers.push(player);
-	for (var i in testPlayers) {
-		testPlayer = testPlayers[i];
-		if (testPlayer.invincible())
+	var otherPlayers = this.playersInBoundsOfPlayer(player).slice(0);
+	otherPlayers.push(player);
+	var headPoints = player.headPoints();
+	for (var i in otherPlayers) {
+		otherPlayer = otherPlayers[i];
+		if (otherPlayer.invincible())
 			continue;
-		collisionPoints = player.collisionPoints();
-		if (testPlayer.containsPointInPath(collisionPoints[0]) || testPlayer.containsPointInPath(collisionPoints[1])) {
-			return testPlayer;
-		}
+
+		// Both players die because they hit on the head
+		if (otherPlayer.id != player.id && (otherPlayer.containsPointInHead(headPoints[0]) || otherPlayer.containsPointInHead(headPoints[1]))) 
+			return { 'winners' : [],
+					 'loosers' : [player, otherPlayer] };
+		// Player hit someone's path or his own path
+		if (otherPlayer.containsPointInPath(headPoints[0]) || otherPlayer.containsPointInPath(headPoints[1]))
+			return { 'winners' : [otherPlayer],
+					 'loosers' : [player] };
 	}
 	return null;
 };
@@ -79,8 +90,8 @@ PlayersController.prototype.sendTo = function(players, message, json) {
 
 PlayersController.prototype.startListeningPlayer = function(player) {
 	player.on("didDisconnect", (function() {
-		otherPlayers = this.playersExceptPlayer(player);
-		json = {
+		var otherPlayers = this.playersExceptPlayer(player);
+		var json = {
 			id: player.id
 		};
 		this.sendTo(otherPlayers, "player/disconnect", json);
@@ -88,19 +99,28 @@ PlayersController.prototype.startListeningPlayer = function(player) {
 	}).bind(this));
 
 	player.on("didSetPosition", (function() {
-		winner = this.deadPlayersBecauseOfPlayer(player);
-		looser = player;
-		if (winner) {
-			json = {
-				winner: winner.id,
-				looser: looser.id
+		var collision = this.collisionWithPlayer(player);
+		if (collision) {
+			var winners = [];
+			var loosers = [];
+			collision.winners.forEach(function(player) {
+				winners.push(player.id);
+			});
+			collision.loosers.forEach(function(player) {
+				loosers.push(player.id);
+			});
+
+			var json = {
+				winners: winners,
+				loosers: loosers
 			};
+
 			this.sendTo(this.players, "player/collision", json);
-			this.removePlayer(looser);
+			this.removePlayers(collision.loosers);
 		}
 		else {
-			otherPlayersInBounds = this.playersInBoundsOfPlayer(player);
-			json = {
+			var otherPlayersInBounds = this.playersInBoundsOfPlayer(player);
+			var json = {
 				id: player.id,
 				position: player.position
 			};
