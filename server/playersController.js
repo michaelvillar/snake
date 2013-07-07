@@ -144,7 +144,7 @@ PlayersController.prototype.startListeningPlayer = function(player) {
 			};
 
 			this.sendTo(this.players, "player/collision", json);
-			this.removePlayers(collision.loosers);
+			this.resetPlayers(collision.loosers);
 		}
 		//Notify otherPlayers of position and if player enter/leave their bounds
 		else {
@@ -189,6 +189,17 @@ PlayersController.prototype.startListeningPlayer = function(player) {
 
 PlayersController.prototype.stopListeningPlayer = function(player) {
 	player.removeAllListeners();
-}
+};
+
+PlayersController.prototype.resetPlayer = function(player) {
+	this.removePlayer(player);
+	this.addPlayerWithSocket(player.socket);
+};
+
+PlayersController.prototype.resetPlayers = function(players) {
+	for (var i in players) {
+		this.resetPlayer(players[i]);
+	}
+};
 
 module.exports	 = PlayersController;
