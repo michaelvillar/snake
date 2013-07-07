@@ -79,4 +79,5 @@ canvas {
 }
 .boostHud.notTriggerable > .blueBoost {
   background: rgba(67, 67, 67, 0.4600);
+  box-shadow: inset 0px 0px 4px rgba(255, 255, 255, .7);
 }
