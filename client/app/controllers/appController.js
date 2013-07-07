@@ -28,6 +28,7 @@ document.body.appendChild( stats.domElement );
 var appController = function() {
   eventEmitter.call(this);
 
+  this.inited = false;
   this.initScene();
 
   this.board = new boardModel(this.scene);
@@ -48,18 +49,21 @@ var appController = function() {
     ip = queryString.replace("#","");
   }
   this.api = new apiController(ip);
-  this.api.setBounds(150, 150);
   this.api.on('playerDidConnect', this.playerDidConnect.bind(this));
 };
 
 appController.prototype = new eventEmitter();
 
 appController.prototype.init = function() {
+  if(this.inited)
+    return;
+  this.inited = true;
+
   this.lastTickDate = new Date();
 
   this.api.on('playerPositionDidChange', this.playerPositionDidChange.bind(this));
   this.api.on('playerDidDisconnect', this.playerDidDisconnect.bind(this));
-  this.api.on('playerPositionDidCollision', this.playerPositionDidCollision.bind(this));
+  this.api.on('playerDidCollision', this.playerDidCollision.bind(this));
   this.api.on('playerDidEnterBounds', this.playerDidEnterBounds.bind(this));
   this.api.on('playerDidLeaveBounds', this.playerDidLeaveBounds.bind(this));
 
@@ -70,6 +74,8 @@ appController.prototype.init = function() {
 
 // API Handler
 appController.prototype.playerDidConnect = function(json) {
+  this.api.setBounds(150, 150);
+
   this.me = new playerModel(this.scene, json, true);
   this.me.setPosition(json.position.x, json.position.y, json.position.z);
   this.me.appear();
@@ -80,12 +86,25 @@ appController.prototype.playerDidConnect = function(json) {
   this.init();
 };
 
-appController.prototype.playerPositionDidCollision = function(json) {
+appController.prototype.playerDidCollision = function(json) {
   var winnersId = json.winners;
   var loosersId = json.loosers;
-  if(loosersId.indexOf(this.me.id) != -1) {
-    alert("You lost!")
-    window.location.reload();
+  if(this.me && loosersId.indexOf(this.me.id) != -1) {
+    if(winnersId.indexOf(this.me.id) != -1)
+      // Collision with myself
+      this.score.increment(-15);
+    else
+      // Someone killed me
+      this.score.increment(-10);
+    this.me.destroy();
+    this.me = null;
+    // Clear players
+    for(var id in this.players) {
+      this.players[id].detach();
+    }
+    this.players = {};
+    // Reset Boost
+    this.boost.fill();
   }
   else {
     // This player is dead
@@ -134,8 +153,7 @@ appController.prototype.playerDidEnterBounds = function(json) {
 };
 
 appController.prototype.playerDidLeaveBounds = function(json) {
-  console.log(json.id , " leave");
-  this.deletePlayerForId(json.id);
+  this.deletePlayerForId(json.id, false);
 };
 
 // Private Methods
@@ -149,10 +167,15 @@ appController.prototype.getOrCreatePlayerForId = function(id) {
   return player;
 };
 
-appController.prototype.deletePlayerForId = function(id) {
+appController.prototype.deletePlayerForId = function(id, animated) {
+  if(animated == undefined)
+    animated = true;
   var player = this.players[id];
   if(player) {
-    player.destroy();
+    if(animated)
+      player.destroy();
+    else
+      player.detach();
     delete this.players[id];
   }
 };
@@ -163,13 +186,13 @@ appController.prototype.bindEvents = function() {
       this.camera.position.z -= 0.5
     else if(e.keyCode == 90) // z
       this.camera.position.z += 0.5
-    else if(e.keyCode == 38) // up
+    else if(e.keyCode == 38 && this.me) // up
       this.me.setDirection({ x:0, y:1, z:0 });
-    else if(e.keyCode == 40) // down
+    else if(e.keyCode == 40 && this.me) // down
       this.me.setDirection({ x:0, y:-1, z:0 });
-    else if(e.keyCode == 37) // left
+    else if(e.keyCode == 37 && this.me) // left
       this.me.setDirection({ x:-1, y:0, z:0 });
-    else if(e.keyCode == 39) // right
+    else if(e.keyCode == 39 && this.me) // right
       this.me.setDirection({ x:1, y:0, z:0 });
     else if(e.keyCode == 32) // space
       this.boost.enable();
@@ -217,21 +240,23 @@ appController.prototype.tick = function() {
   this.currentTickDate = new Date()
   var ms = this.currentTickDate.getTime() - this.lastTickDate.getTime()
 
-  var currentSpeed = SPEED;
-  if(this.boost.enabled)
-    currentSpeed = this.boost.speed;
-  distanceToMove = currentSpeed / 1000 * ms;
+  if(this.me) {
+    var currentSpeed = SPEED;
+    if(this.boost.enabled)
+      currentSpeed = this.boost.speed;
+    distanceToMove = currentSpeed / 1000 * ms;
 
-  this.boost.tick(ms);
+    this.boost.tick(ms);
 
-  this.me.move(this.me.direction.x * distanceToMove,
-               this.me.direction.y * distanceToMove,
-               this.me.direction.z * distanceToMove)
-  this.board.updateCenter(this.me.getPosition());
+    this.me.move(this.me.direction.x * distanceToMove,
+                 this.me.direction.y * distanceToMove,
+                 this.me.direction.z * distanceToMove)
+    this.board.updateCenter(this.me.getPosition());
 
-  this.moveCameraToPosition(this.me.getPosition(), this.camera.position.z == 0);
+    this.moveCameraToPosition(this.me.getPosition(), this.camera.position.z == 0);
 
-  this.api.setPosition(this.me.getPosition());
+    this.api.setPosition(this.me.getPosition());
+  }
 
   this.lastTickDate = this.currentTickDate
 

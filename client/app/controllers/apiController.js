@@ -51,7 +51,7 @@ apiController.prototype.onPlayer = function(json) {
 };
 
 apiController.prototype.onPlayerCollision = function(json) {
-  this.trigger('playerPositionDidCollision',json);
+  this.trigger('playerDidCollision',json);
 };
 
 apiController.prototype.onPlayerPosition = function(json) {
