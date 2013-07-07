@@ -81,3 +81,23 @@ canvas {
   background: rgba(67, 67, 67, 0.4600);
   box-shadow: inset 0px 0px 4px rgba(255, 255, 255, .7);
 }
+
+.scoreHud {
+  user-select: none;
+  -webkit-user-select: none;
+  position: absolute;
+  bottom: 32px;
+  right: 30px;
+  font-family: "AvenirBold", Helvetica, Arial;
+}
+.scoreHud > .score {
+  float: right;
+  font-size: 40px;
+  color: white;
+}
+.scoreHud > .label {
+  float: right;
+  font-size: 18px;
+  color: rgba(255,255,255,.42);
+  padding: 12px 16px 0 0;
+}

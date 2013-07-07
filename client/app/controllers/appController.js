@@ -1,6 +1,7 @@
 var apiController = require('apiController');
 var hudController = require('hudController');
 var boostModel = require('boostModel');
+var scoreModel = require('scoreModel');
 var playerModel = require('playerModel');
 var boardModel = require('boardModel');
 
@@ -30,8 +31,9 @@ var appController = function() {
   this.board.attach();
 
   this.boost = new boostModel();
+  this.score = new scoreModel();
 
-  this.hud = new hudController(this.boost);
+  this.hud = new hudController(this.boost, this.score);
   document.body.appendChild(this.hud.el);
 
   this.players = {};
@@ -80,6 +82,7 @@ appController.prototype.playerPositionDidCollision = function(json) {
     }
 
     if(winnersId.indexOf(this.me.id) != -1) {
+      this.score.increment(10);
       // Reset Boost
       this.boost.fill();
     }
