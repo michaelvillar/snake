@@ -1,5 +1,8 @@
 var Player = require('./player');
 var Circle = require('./circle');
+var Helper = require('./helper');
+var Obstacle = require('./obstacle');
+var ObstaclesController = require('./obstaclesController');
 
 ///////////////////////////////////////
 // PRIVATE
@@ -11,6 +14,8 @@ var Circle = require('./circle');
 
 var PlayersController = function() {
 	this.players = [];
+	this.obstaclesController = ObstaclesController.singleton(this.players);
+	this.obstaclesController.on("newObstacle", this.onNewObstacle.bind(this));
 };
 
 PlayersController.prototype.addPlayerWithSocket = function(socket) {
@@ -26,26 +31,19 @@ PlayersController.prototype.addPlayerWithSocket = function(socket) {
 		while (!foundPosition) {
 			var index = Math.round(Math.random() * (this.players.length - 1));
 			var otherPlayer = this.players[index];
-			var randomAngle = Math.random() * Math.PI;
-			var randomRadius = 10 + Math.random() * 10;
-			position.x = otherPlayer.position.x + (Math.cos(randomRadius) * randomRadius);
-			position.y = otherPlayer.position.y + (Math.sin(randomRadius) * randomRadius);
-
+			position = Helper.randomPositionWith(otherPlayer.position, 10, 20);
 			var newPlayerCircle = new Circle(position, 4);
 
-			foundPosition = true;
-			this.players.forEach(function(player) {
-				if (player.id != otherPlayer.id && (newPlayerCircle.containsPoint(player.position) || player.containsPointInPath(position))) {
-					foundPosition = false;
-					return;
-				}
-			});
+			foundPosition = !Helper.isAnyPlayerInCircleOrPathAtCenter(this.playersExceptPlayer(player), newPlayerCircle);
 		}
 	}
 
 	////////////////////
 	var player = new Player(socket, position);
 	this.players.push(player);
+	if (this.players.length == 1) {
+		this.obstaclesController.startSpawningObstacles();
+	}
 	this.sendTo(player, "player", {id: player.id, position: player.position});
 	player.startListening();
 	this.startListeningPlayer(player);
@@ -202,4 +200,26 @@ PlayersController.prototype.resetPlayers = function(players) {
 	}
 };
 
-module.exports	 = PlayersController;
+PlayersController.prototype.onNewObstacle = function(obstacle) {
+	json = {
+		id: obstacle.id,
+		position: obstacle.position,
+		size: obstacle.size
+	}
+	for (var i in this.players) {
+		var player = this.players[i];
+		if (player.boundsContainPoint(obstacle.position)) {
+			this.sendTo(player, "obstacle", json);
+		}
+	}
+};
+
+var playersController = null;
+
+function init() {
+	if (!playersController)
+		playersController = new PlayersController();
+	return playersController;
+}
+
+module.exports.singleton = init;
