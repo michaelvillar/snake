@@ -1,4 +1,5 @@
-var Player = require('./player')
+var Player = require('./player');
+var Circle = require('./circle');
 
 ///////////////////////////////////////
 // PRIVATE
@@ -12,9 +13,40 @@ var PlayersController = function() {
 	this.players = [];
 };
 
-PlayersController.prototype.addPlayer = function(player) {
+PlayersController.prototype.addPlayerWithSocket = function(socket) {
+	//Find a position near a player
+	var position = {
+		x: 0,
+		y: 0,
+		z: 0,
+	};
+
+	if (this.players.length >= 1) {
+		var foundPosition = false;
+		while (!foundPosition) {
+			var index = Math.round(Math.random() * (this.players.length - 1));
+			var otherPlayer = this.players[index];
+			var randomAngle = Math.random() * Math.PI;
+			var randomRadius = 15 + Math.random() * 15;
+			position.x = otherPlayer.position.x + (Math.cos(randomRadius) * randomRadius);
+			position.y = otherPlayer.position.y + (Math.sin(randomRadius) * randomRadius);
+
+			var newPlayerCircle = new Circle(position, 4);
+
+			foundPosition = true;
+			this.players.forEach(function(player) {
+				if (player.id != otherPlayer.id && newPlayerCircle.containsPoint(player.position)) {
+					foundPosition = false;
+					return;
+				}
+			});
+		}
+	}
+
+	////////////////////
+	var player = new Player(socket, position);
 	this.players.push(player);
-	this.sendTo(player, "player", {id: player.id});
+	this.sendTo(player, "player", {id: player.id, position: player.position});
 	player.startListening();
 	this.startListeningPlayer(player);
 };

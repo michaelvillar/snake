@@ -15,14 +15,10 @@ function nextId() {
 // PUBLIC
 ///////////////////////////////////////
 
-var Player = function(socket) {
+var Player = function(socket, position) {
 	this.socket = socket;
 	this.id = nextId();
-	this.position = {
-		x: 0,
-		y: 0,
-		z: 0
-	};
+	this.position = position;
 	this.headThickness = 1;
 	this.path = new Path(this.position, this.headThickness / 2);
 	this.bounds = null;
