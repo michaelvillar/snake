@@ -1,9 +1,9 @@
 var eventEmitter = require('eventEmitter');
 
-var apiController = function() {
+var apiController = function(ip) {
   eventEmitter.call(this);
 
-  this.socket = io.connect('http://192.168.0.12:5000');
+  this.socket = io.connect('http://'+ip+':5000');
 
   // Routes
   this.socket.on("player", this.onPlayer.bind(this));

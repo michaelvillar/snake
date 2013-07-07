@@ -38,7 +38,13 @@ var appController = function() {
 
   this.players = {};
 
-  this.api = new apiController();
+  var locationArgs = document.location.toString().split("#");
+  var ip = 'localhost';
+  if(locationArgs.length == 2) {
+    var queryString = locationArgs[1];
+    ip = queryString.replace("#","");
+  }
+  this.api = new apiController(ip);
   this.api.setBounds(150, 150);
   this.api.on('playerDidConnect', this.playerDidConnect.bind(this));
   this.api.on('didReceiveError', function() {
