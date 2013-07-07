@@ -95,6 +95,18 @@ canvas {
   font-size: 40px;
   color: white;
 }
+@-webkit-keyframes scoreHudScoreBounceAnimation {
+  0% {}
+  50% {
+    -webkit-transform: scale(1.1);
+  }
+  100% {}
+}
+.scoreHud > .score.bounce {
+  -webkit-animation-name: scoreHudScoreBounceAnimation;
+  -webkit-animation-duration: .5s;
+  -webkit-animation-timing-function: ease-in-out;
+}
 .scoreHud > .label {
   float: right;
   font-size: 18px;

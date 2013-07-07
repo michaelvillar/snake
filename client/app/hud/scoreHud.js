@@ -21,4 +21,12 @@ var scoreHud = function(scoreModel) {
 
 scoreHud.prototype.scoreModelDidChange = function() {
   this.score.innerHTML = this.scoreModel.value;
+  this.bounce();
+};
+
+scoreHud.prototype.bounce = function() {
+  this.score.classList.add('bounce');
+  setTimeout(function() {
+    this.score.classList.remove('bounce');
+  }.bind(this), 5);
 };

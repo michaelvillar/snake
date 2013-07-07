@@ -2,6 +2,8 @@ var eventEmitter = require('eventEmitter');
 
 var scoreModel = function(value) {
   eventEmitter.call(this);
+  if(!value)
+    value = 0;
   this.value = value;
 };
 
