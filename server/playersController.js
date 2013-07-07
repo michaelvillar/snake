@@ -27,7 +27,7 @@ PlayersController.prototype.addPlayerWithSocket = function(socket) {
 			var index = Math.round(Math.random() * (this.players.length - 1));
 			var otherPlayer = this.players[index];
 			var randomAngle = Math.random() * Math.PI;
-			var randomRadius = 15 + Math.random() * 15;
+			var randomRadius = 5 + Math.random() * 5;
 			position.x = otherPlayer.position.x + (Math.cos(randomRadius) * randomRadius);
 			position.y = otherPlayer.position.y + (Math.sin(randomRadius) * randomRadius);
 
@@ -57,12 +57,18 @@ PlayersController.prototype.removePlayer = function(player) {
 		this.players.splice(index, 1);
 		this.stopListeningPlayer(player);
 	}
+	for (var i in this.players) {
+		otherPlayer = this.players[i];
+		index = otherPlayer.otherPlayersInBounds[player];
+		if (index != -1)
+			otherPlayer.otherPlayersInBounds.splice(index, 1);
+	}
 };
 
 PlayersController.prototype.removePlayers = function(players) {
-	players.forEach((function(player) {
-		this.removePlayer(player);
-	}).bind(this));
+	for (var i in players) {
+		this.removePlayer(players[i]);
+	}
 }
 
 PlayersController.prototype.playersExceptPlayer = function(player) {
@@ -74,21 +80,10 @@ PlayersController.prototype.playersExceptPlayer = function(player) {
 	return otherPlayers;
 };
 
-PlayersController.prototype.playersInBoundsOfPlayer = function(player) {
-	var otherPlayers = this.playersExceptPlayer(player);
-	var otherPlayersInBounds = [];
-	otherPlayers.forEach(function(testPlayer) {
-		var isInBounds = testPlayer.boundsContainPoint(player.position);
-		if (isInBounds)
-			otherPlayersInBounds.push(testPlayer);
-	})
-	return otherPlayersInBounds;
-};
-
 PlayersController.prototype.collisionWithPlayer = function(player) {
 	if (player.invincible())
 		return null;
-	var otherPlayers = this.playersInBoundsOfPlayer(player).slice(0);
+	var otherPlayers = player.otherPlayersInBounds.slice(0);
 	otherPlayers.push(player);
 	var headPoints = player.headPoints();
 	for (var i in otherPlayers) {
@@ -131,6 +126,7 @@ PlayersController.prototype.startListeningPlayer = function(player) {
 	}).bind(this));
 
 	player.on("didSetPosition", (function() {
+		//Notify players of collision
 		var collision = this.collisionWithPlayer(player);
 		if (collision) {
 			var winners = [];
@@ -150,13 +146,43 @@ PlayersController.prototype.startListeningPlayer = function(player) {
 			this.sendTo(this.players, "player/collision", json);
 			this.removePlayers(collision.loosers);
 		}
+		//Notify otherPlayers of position and if player enter/leave their bounds
 		else {
-			var otherPlayersInBounds = this.playersInBoundsOfPlayer(player);
-			var json = {
-				id: player.id,
-				position: player.position
-			};
-			this.sendTo(otherPlayersInBounds, "player/position", json);
+			otherPlayers = this.playersExceptPlayer(player);
+			for (var i in otherPlayers) {
+				var otherPlayer = otherPlayers[i];
+				//player previously in otherPlayer's bounds ?
+				var index = otherPlayer.otherPlayersInBounds.indexOf(player);
+
+				//player currently in otherPlayer's bounds ?
+				var playerInBounds = otherPlayer.boundsContainPoint(player.position);
+
+				//player not previously but currently in bounds
+				if (playerInBounds && index == - 1) {
+					otherPlayer.otherPlayersInBounds.push(player);
+					//collect path
+					var path = [];
+					player.path.blocks.forEach(function(block) {
+						var blockData = {
+							position: block.center,
+							size: {
+								width: block.getWidth(),
+								height: block.getHeight()
+							},
+							direction: block.direction
+						}
+						path.push(blockData);
+					});
+					this.sendTo(otherPlayer, "player/enterBounds", {id: player.id, position: player.position, path: path});
+				}
+				//player previously but not currently in bounds
+				else if (!playerInBounds && index != -1) {
+					otherPlayer.otherPlayersInBounds.splice(index, 1);
+					this.sendTo(otherPlayer, "player/leaveBounds", {id: player.id});
+				}
+				else if(playerInBounds && index != -1)
+					this.sendTo(otherPlayer, "player/position", {id: player.id, position: player.position});
+			}
 		}
 	}).bind(this));
 };

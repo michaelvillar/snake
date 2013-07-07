@@ -23,6 +23,7 @@ var Player = function(socket, position) {
 	this.path = new Path(this.position, this.headThickness / 2);
 	this.bounds = null;
 	this.direction = null;
+	this.otherPlayersInBounds = [];
 }
 
 Player.prototype = new EventEmitter();
