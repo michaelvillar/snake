@@ -59,23 +59,27 @@ appController.prototype.init = function() {
 // API Handler
 appController.prototype.playerDidConnect = function(json) {
   this.me = new playerModel(this.scene, json, true);
+  this.me.appear();
   this.me.attach();
 
   this.init();
 };
 
 appController.prototype.playerPositionDidCollision = function(json) {
-  var winnerId = json.winner;
-  var looserId = json.looser;
-  if(this.me.id == looserId) {
+  var winnersId = json.winners;
+  var loosersId = json.loosers;
+  if(loosersId.indexOf(this.me.id) != -1) {
     alert("You lost!")
     window.location.reload();
   }
   else {
     // This player is dead
-    this.deletePlayerForId(looserId);
+    for(var i in loosersId) {
+      var looserId = loosersId[i];
+      this.deletePlayerForId(looserId);
+    }
 
-    if(this.me.id == winnerId) {
+    if(winnersId.indexOf(this.me.id) != -1) {
       // Reset Boost
       this.boost.fill();
     }
