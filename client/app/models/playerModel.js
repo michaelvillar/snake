@@ -28,6 +28,11 @@ playerModel.prototype.detach = function() {
   this.path.detach();
 };
 
+playerModel.prototype.destroy = function() {
+  this.cube.destroy();
+  this.path.destroy();
+};
+
 playerModel.prototype.move = function(x, y, z) {
   this.setPosition(this.cube.getPosition().x + x, this.cube.getPosition().y + y, this.cube.getPosition().z + z);
 };

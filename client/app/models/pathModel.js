@@ -14,7 +14,13 @@ pathModel.prototype.attach = function() {
 
 pathModel.prototype.detach = function() {
   for(var i in this.cubes) {
-    this.scene.remove(this.cubes[i].mesh);
+    this.cubes[i].detach();
+  }
+};
+
+pathModel.prototype.destroy = function() {
+  for(var i in this.cubes) {
+    this.cubes[i].destroy();
   }
 };
 

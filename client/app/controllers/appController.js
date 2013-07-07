@@ -115,7 +115,7 @@ appController.prototype.getOrCreatePlayerForId = function(id) {
 appController.prototype.deletePlayerForId = function(id) {
   var player = this.players[id];
   if(player) {
-    player.detach();
+    player.destroy();
     delete this.players[id];
   }
 };
@@ -167,6 +167,7 @@ appController.prototype.render = function() {
     this.render();
   }.bind(this));
   this.tick();
+  TWEEN.update();
   this.renderer.render(this.scene, this.camera);
 };
 
