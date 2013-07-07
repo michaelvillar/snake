@@ -26,7 +26,10 @@ var appController = function() {
 
   this.api = new apiController();
   this.api.setBounds(150, 150);
-  this.api.on('playerDidConnect', this.playerDidConnect.bind(this))
+  this.api.on('playerDidConnect', this.playerDidConnect.bind(this));
+  this.api.on('didReceiveError', function() {
+    this.playerDidConnect({ id: 1 });
+  }.bind(this));
 };
 
 appController.prototype.init = function() {

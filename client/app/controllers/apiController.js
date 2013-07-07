@@ -3,14 +3,29 @@ var eventEmitter = require('eventEmitter');
 var apiController = function() {
   eventEmitter.call(this);
 
-  this.socket = io.connect('http://192.168.0.8:5000');
+  this.socket = io.connect('http://192.168.0.12:5000');
+
+  // Routes
   this.socket.on("player", this.onPlayer.bind(this));
   this.socket.on("player/position", this.onPlayerPosition.bind(this));
   this.socket.on("player/disconnect", this.onPlayerDisconnect.bind(this));
   this.socket.on("player/collision", this.onPlayerCollision.bind(this));
+
+  // Socket.io Events
+  this.socket.on("error", this.didReceiveError.bind(this));
+  this.socket.on("connect_failed", this.didFailToConnect.bind(this));
 };
 
 apiController.prototype = new eventEmitter();
+
+// Socket.io Events
+apiController.prototype.didReceiveError = function() {
+  this.trigger("didReceiveError");
+};
+
+apiController.prototype.didFailToConnect = function() {
+  this.trigger("didFailToConnect");
+};
 
 // Send API Requests
 apiController.prototype.setPosition = function(position) {
