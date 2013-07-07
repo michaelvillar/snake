@@ -35,7 +35,7 @@ PlayersController.prototype.addPlayerWithSocket = function(socket) {
 
 			foundPosition = true;
 			this.players.forEach(function(player) {
-				if (player.id != otherPlayer.id && newPlayerCircle.containsPoint(player.position)) {
+				if (player.id != otherPlayer.id && (newPlayerCircle.containsPoint(player.position) || player.containsPointInPath(position))) {
 					foundPosition = false;
 					return;
 				}
