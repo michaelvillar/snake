@@ -16,6 +16,13 @@ var LIGHT_OFFSET = {
   z: 10
 };
 
+// Stats
+var stats = new Stats();
+stats.domElement.style.position = 'absolute';
+stats.domElement.style.left = '0px';
+stats.domElement.style.top = '0px';
+document.body.appendChild( stats.domElement );
+
 var appController = function() {
   this.initScene();
 
@@ -178,6 +185,8 @@ appController.prototype.tick = function() {
   this.api.setPosition(this.me.cube.position);
 
   this.lastTickDate = this.currentTickDate
+
+  stats.update();
 };
 
 appController.prototype.moveCameraToPosition = function(position, force) {
