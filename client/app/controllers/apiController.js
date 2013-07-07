@@ -6,12 +6,16 @@ var apiController = function(ip) {
   this.socket = io.connect('http://'+ip+':5000');
 
   // Routes
+  //// Players
   this.socket.on("player", this.onPlayer.bind(this));
   this.socket.on("player/position", this.onPlayerPosition.bind(this));
   this.socket.on("player/disconnect", this.onPlayerDisconnect.bind(this));
   this.socket.on("player/collision", this.onPlayerCollision.bind(this));
   this.socket.on("player/enterBounds", this.onPlayerDidEnterBounds.bind(this));
   this.socket.on("player/leaveBounds", this.onPlayerDidLeaveBounds.bind(this));
+
+  //// Obstacles
+  this.socket.on("obstacle", this.onObstacle.bind(this));
 
   // Socket.io Events
   this.socket.on("error", this.didReceiveError.bind(this));
@@ -68,4 +72,8 @@ apiController.prototype.onPlayerDidEnterBounds = function(json) {
 
 apiController.prototype.onPlayerDidLeaveBounds = function(json) {
   this.trigger('playerDidLeaveBounds', json);
+};
+
+apiController.prototype.onObstacle = function(json) {
+  this.trigger('didReceiveObstacle', json);
 };

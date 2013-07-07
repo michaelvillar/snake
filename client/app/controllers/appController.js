@@ -3,6 +3,7 @@ var hudController = require('hudController');
 var boostModel = require('boostModel');
 var scoreModel = require('scoreModel');
 var playerModel = require('playerModel');
+var obstacleModel = require('obstacleModel');
 var boardModel = require('boardModel');
 var eventEmitter = require('eventEmitter');
 
@@ -41,6 +42,7 @@ var appController = function() {
   document.body.appendChild(this.hud.el);
 
   this.players = {};
+  this.obstacles = {};
 
   var locationArgs = document.location.toString().split("#");
   var ip = 'localhost';
@@ -67,6 +69,8 @@ appController.prototype.init = function() {
   this.api.on('playerDidEnterBounds', this.playerDidEnterBounds.bind(this));
   this.api.on('playerDidLeaveBounds', this.playerDidLeaveBounds.bind(this));
 
+  this.api.on('didReceiveObstacle', this.didReceiveObstacle.bind(this));
+
   this.render();
 
   this.bindEvents();
@@ -84,6 +88,22 @@ appController.prototype.playerDidConnect = function(json) {
   this.trigger('meDidChange');
 
   this.init();
+
+  setInterval(function() {
+    this.didReceiveObstacle({
+      id: Math.round(Math.random() * 1000000),
+      position: {
+        x: this.me.position.x + Math.round(Math.random() * 50 - 25),
+        y: this.me.position.y + Math.round(Math.random() * 50 - 25),
+        z: 1
+      },
+      size: {
+        x: 2,
+        y: 2,
+        z: 2
+      }
+    });
+  }.bind(this), 500);
 };
 
 appController.prototype.playerDidCollision = function(json) {
@@ -154,6 +174,15 @@ appController.prototype.playerDidEnterBounds = function(json) {
 
 appController.prototype.playerDidLeaveBounds = function(json) {
   this.deletePlayerForId(json.id, false);
+};
+
+appController.prototype.didReceiveObstacle = function(json) {
+  var obstacle = this.obstacles[json.id];
+  if(!obstacle) {
+    obstacle = new obstacleModel(this.scene, json.position, json.size);
+    obstacle.appear();
+    this.obstacles[json.id] = obstacle;
+  }
 };
 
 // Private Methods

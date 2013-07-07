@@ -4,4 +4,5 @@
 #= require_tree ./base
 #= require_tree ./hud
 #= require_tree ./bots
+#= require_tree ./lib
 #= require_self
