@@ -36,6 +36,6 @@ pathCubeModel.prototype.isEmpty = function() {
   return (this.mesh.scale.x == 0 || this.mesh.scale.y == 0);
 };
 
-pathCubeModel.prototype.scale = function(x,y,z) {
-  this.mesh.scale = new THREE.Vector3();
+pathCubeModel.prototype.setScale = function(x,y,z) {
+  this.mesh.scale = new THREE.Vector3(x,y,z);
 };

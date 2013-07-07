@@ -68,5 +68,5 @@ cubeModel.prototype.getPosition = function() {
 };
 
 cubeModel.prototype.setPosition = function(position) {
-  this.mesh.position = position;
+  this.mesh.position = new THREE.Vector3(position.x,position.y,position.z);
 };

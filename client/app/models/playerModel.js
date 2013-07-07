@@ -43,6 +43,22 @@ playerModel.prototype.move = function(x, y, z) {
   this.setPosition(this.cube.getPosition().x + x, this.cube.getPosition().y + y, this.cube.getPosition().z + z);
 };
 
+playerModel.prototype.setPath = function(path) {
+  this.path.reset();
+  var pathLength = 0;
+  for(var i in path) {
+    var block = path[i];
+    var cube = this.path.attachCube(block.direction);
+    cube.setPosition({x: block.position.x,
+                      y: block.position.y,
+                      z: 0});
+    cube.setScale(block.size.width, block.size.height, 1);
+    pathLength += Math.abs(block.size.width * block.direction.x);
+    pathLength += Math.abs(block.size.height * block.direction.y);
+  }
+  this.path.length = pathLength;
+};
+
 playerModel.prototype.getPosition = function() {
   return this.cube.getPosition();
 };
@@ -77,11 +93,10 @@ playerModel.prototype.setDirection = function(direction) {
     return;
   }
 
-
   if(direction.x != this.direction.x || direction.y != this.direction.y) {
     var cube = this.path.attachCube(direction);
-    cube.position.x = this.cube.getPosition().x - direction.x * this.cube.scale().x / 2;
-    cube.position.y = this.cube.getPosition().y - direction.y * this.cube.scale().y / 2;
+    cube.mesh.position.x = this.cube.getPosition().x - direction.x * this.cube.scale().x / 2;
+    cube.mesh.position.y = this.cube.getPosition().y - direction.y * this.cube.scale().y / 2;
   }
   this.nextDirection = null;
   this.direction = direction;

@@ -2,11 +2,8 @@ var pathCubeModel = require('pathCubeModel');
 
 var pathModel = function(scene, color) {
   this.scene = scene;
-  this.cubes = [];
-  this.length = 0;
-  this.maxLength = 25;
-  this.direction = null;
   this.color = color;
+  this.init();
 };
 
 pathModel.prototype.attach = function() {
@@ -24,13 +21,25 @@ pathModel.prototype.destroy = function() {
   }
 };
 
+pathModel.prototype.init = function() {
+  this.cubes = [];
+  this.length = 0;
+  this.maxLength = 25;
+  this.direction = null;
+};
+
+pathModel.prototype.reset = function() {
+  this.detach();
+  this.init();
+};
+
 pathModel.prototype.attachCube = function(direction) {
   this.direction = direction;
   var cube = new pathCubeModel(this.scene, this.color, direction);
-  cube.scale(Math.abs(direction.y), Math.abs(direction.x), 1);
+  cube.setScale(Math.abs(direction.y), Math.abs(direction.x), 1);
   cube.attach();
   this.cubes.push(cube);
-  return cube.mesh;
+  return cube;
 };
 
 pathModel.prototype.move = function(length) {

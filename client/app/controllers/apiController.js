@@ -10,6 +10,8 @@ var apiController = function(ip) {
   this.socket.on("player/position", this.onPlayerPosition.bind(this));
   this.socket.on("player/disconnect", this.onPlayerDisconnect.bind(this));
   this.socket.on("player/collision", this.onPlayerCollision.bind(this));
+  this.socket.on("player/enterBounds", this.onPlayerDidEnterBounds.bind(this));
+  this.socket.on("player/leaveBounds", this.onPlayerDidLeaveBounds.bind(this));
 
   // Socket.io Events
   this.socket.on("error", this.didReceiveError.bind(this));
@@ -58,4 +60,12 @@ apiController.prototype.onPlayerPosition = function(json) {
 
 apiController.prototype.onPlayerDisconnect = function(json) {
   this.trigger('playerDidDisconnect',json);
+};
+
+apiController.prototype.onPlayerDidEnterBounds = function(json) {
+  this.trigger('playerDidEnterBounds', json);
+};
+
+apiController.prototype.onPlayerDidLeaveBounds = function(json) {
+  this.trigger('playerDidLeaveBounds', json);
 };

@@ -50,9 +50,6 @@ var appController = function() {
   this.api = new apiController(ip);
   this.api.setBounds(150, 150);
   this.api.on('playerDidConnect', this.playerDidConnect.bind(this));
-  this.api.on('didReceiveError', function() {
-    this.playerDidConnect({ id: 1, position: {x:0,y:0,z:0} });
-  }.bind(this));
 };
 
 appController.prototype = new eventEmitter();
@@ -63,6 +60,8 @@ appController.prototype.init = function() {
   this.api.on('playerPositionDidChange', this.playerPositionDidChange.bind(this));
   this.api.on('playerDidDisconnect', this.playerDidDisconnect.bind(this));
   this.api.on('playerPositionDidCollision', this.playerPositionDidCollision.bind(this));
+  this.api.on('playerDidEnterBounds', this.playerDidEnterBounds.bind(this));
+  this.api.on('playerDidLeaveBounds', this.playerDidLeaveBounds.bind(this));
 
   this.render();
 
@@ -119,6 +118,23 @@ appController.prototype.playerPositionDidChange = function(json) {
 };
 
 appController.prototype.playerDidDisconnect = function(json) {
+  this.deletePlayerForId(json.id);
+};
+
+appController.prototype.playerDidEnterBounds = function(json) {
+  if(!json.path || json.path.length == 0) {
+    this.playerPositionDidChange(json);
+    return;
+  }
+  var player = this.getOrCreatePlayerForId(json.id);
+  var position = json.position;
+  player.setDirection(json.path[json.path.length-1].direction);
+  player.setPosition(position.x, position.y, position.z);
+  player.setPath(json.path);
+};
+
+appController.prototype.playerDidLeaveBounds = function(json) {
+  console.log(json.id , " leave");
   this.deletePlayerForId(json.id);
 };
 
