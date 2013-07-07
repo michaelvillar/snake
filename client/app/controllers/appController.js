@@ -153,7 +153,7 @@ appController.prototype.initScene = function() {
   this.camera.rotation.x = 0.5;
 
   // Render
-  this.renderer = new THREE.WebGLRenderer({ antialias: true });
+  this.renderer = new THREE.WebGLRenderer({ antialias: false });
   this.renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(this.renderer.domElement);
 
