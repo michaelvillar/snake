@@ -201,6 +201,7 @@ appController.prototype.tick = function() {
 };
 
 appController.prototype.moveCameraToPosition = function(position, force) {
+  position.z = 0;
   var coords = ["x", "y", "z"];
   for(var i in coords) {
     var coord = coords[i];

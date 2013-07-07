@@ -33,7 +33,13 @@ playerModel.prototype.destroy = function() {
   this.path.destroy();
 };
 
+playerModel.prototype.appear = function() {
+  this.cube.appear();
+};
+
 playerModel.prototype.move = function(x, y, z) {
+  if(x != 0 || y != 0)
+    this.cube.cancelAppearAnimation();
   this.setPosition(this.cube.getPosition().x + x, this.cube.getPosition().y + y, this.cube.getPosition().z + z);
 };
 
