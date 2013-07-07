@@ -1,5 +1,6 @@
 EventEmitter = require('events').EventEmitter;
 Path = require('./path');
+helper = require('./helper');
 
 ///////////////////////////////////////
 // PRIVATE
@@ -8,45 +9,7 @@ Path = require('./path');
 var currentId = 0;
 function nextId() {
 	return currentId++;
-}
-
-function getDirection(position, json) {
-	unNormalizedDirection = {
-		x: json.x - position.x,
-		y: json.y - position.y,
-		z: json.z - position.z
-	};
-	direction = {};
-	for (key in unNormalizedDirection) {
-		if (unNormalizedDirection[key] > 0)
-			direction[key] = 1;
-		else if (unNormalizedDirection[key] < 0)
-			direction[key] = -1;
-		else
-			direction[key] = 0;
-	}
-	return direction;
-}
-
-function onSetPosition(json) {
-	this.direction = getDirection(this.position, json);
-	increment = Math.max(Math.abs(this.position.x - json.x), Math.abs(this.position.y - json.y));
-	if (this.direction.x != 0 || this.direction.y != 0 || this.direction.z != 0)
-		this.path.incrementSize(this.direction, increment);
-
-	this.position.x = json.x;
-	this.position.y = json.y;
-	this.position.z = json.z;
-	this.emit("didSetPosition");
-}
-
-function onDisconnect(json) {
-	this.emit("didDisconnect");
-}
-
-function onSetBounds(json) {
-	this.bounds = json;
-}
+};
 
 ///////////////////////////////////////
 // PUBLIC
@@ -60,8 +23,8 @@ var Player = function(socket) {
 		y: 0,
 		z: 0
 	};
-	this.thickness = 1;
-	this.path = new Path(this.position, this.thickness / 2);
+	this.headThickness = 1;
+	this.path = new Path(this.position, this.headThickness / 2);
 	this.bounds = null;
 	this.direction = null;
 }
@@ -69,12 +32,25 @@ var Player = function(socket) {
 Player.prototype = new EventEmitter();
 
 Player.prototype.startListening = function() {
-	this.socket.on("setPosition", onSetPosition.bind(this));
-	this.socket.on("disconnect", onDisconnect.bind(this));
-	this.socket.on("setBounds", onSetBounds.bind(this));
+	this.socket.on("setPosition", (function(newPosition) {
+		this.direction = helper.directionFromPositions(this.position, newPosition);
+		if (this.direction.x != 0 || this.direction.y != 0 || this.direction.z != 0)
+			this.path.incrementSize(this.direction, helper.incrementFromPositions(this.position, newPosition));
+
+		this.position = newPosition;
+		this.emit("didSetPosition");
+	}).bind(this));
+
+	this.socket.on("disconnect", (function() {
+		this.emit("didDisconnect");
+	}).bind(this));
+
+	this.socket.on("setBounds", (function(json) {
+		this.bounds = json;
+	}).bind(this));
 };
 
-Player.prototype.isPointInBounds = function(point) {
+Player.prototype.boundsContainPoint = function(point) {
 	if (!this.bounds)
 		return false;
 
@@ -86,37 +62,29 @@ Player.prototype.isPointInBounds = function(point) {
 	isXInBounds = point.x >= minX && point.x <= maxX;
 	isYInBounds = point.y >= minY && point.y <= maxY;
 
-
 	return isXInBounds && isYInBounds;
 };
 
-Player.prototype.doesKillPlayer = function(player) {
-	if (player.direction.x == 0) {
-		collisionPoint1 = {
-			x: player.position.x + player.thickness / 2,
-			y: player.position.y + player.direction.y * player.thickness / 2,
-			z: 0
-		}
-		collisionPoint2 = {
-			x: player.position.x - player.thickness / 2,
-			y: player.position.y + player.direction.y * player.thickness / 2,
-			z: 0
-		}
+Player.prototype.collisionPoints = function() {
+	collisionPoint1 = {
+		x: this.position.x + (this.direction.x * this.headThickness / 2) + (this.direction.y * this.headThickness / 2),
+		y: this.position.y + (this.direction.y * this.headThickness / 2) + (this.direction.x * this.headThickness / 2),
+		z: 0
 	}
+	collisionPoint2 = {
+		x: this.position.x + (this.direction.x * this.headThickness / 2) - (this.direction.y * this.headThickness / 2),
+		y: this.position.y + (this.direction.y * this.headThickness / 2) - (this.direction.x * this.headThickness / 2),
+		z: 0
+	}
+	return [collisionPoint1, collisionPoint2];
+};
 
-	else {
-		collisionPoint1 = {
-			x: player.position.x + player.direction.x * player.thickness / 2,
-			y: player.position.y + player.thickness / 2,
-			z: 0
-		}
-		collisionPoint2 = {
-			x: player.position.x + player.direction.x * player.thickness / 2,
-			y: player.position.y - player.thickness / 2,
-			z: 0
-		}
-	}
-	return this.path.containsPoint(collisionPoint1) || this.path.containsPoint(collisionPoint2);
+Player.prototype.containsPointInPath = function(point) {
+	return this.path.containsPoint(point);
+};
+
+Player.prototype.invincible = function() {
+	return this.direction == null || (this.direction.x == 0 && this.direction.y == 0 && this.direction.z == 0);
 }
 
 module.exports = Player;

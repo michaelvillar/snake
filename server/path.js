@@ -1,36 +1,6 @@
 var Block = require('./block');
 
 ///////////////////////////////////////
-// PRIVATE
-///////////////////////////////////////
-
-function createNextBlock(direction, increment) {
-	if (direction.x == 0) {
-		width = this.thickness;
-		height = increment;
-	}
-	else {
-		width = increment;
-		height = this.thickness;
-	}
-
-	if (this.blocks.length == 0) {
-		center = {
-			x: this.headStartPosition.x + direction.x * ((width - this.thickness) / 2),
-			y: this.headStartPosition.y + direction.y * ((height - this.thickness) / 2)
-		};
-	}
-	else {
-		center = {
-			x: lastBlock.center.x + this.currentDirection.x * ((lastBlock.getWidth() + width) / 2) + (direction.x * ((width - lastBlock.getWidth()) / 2)),
-			y: lastBlock.center.y + this.currentDirection.y * ((lastBlock.getHeight() + height) / 2) + (direction.y * ((height - lastBlock.getHeight()) / 2))
-		};
-	}
-	newBlock = new Block(center, increment, this.thickness, direction);
-	return newBlock;
-};
-
-///////////////////////////////////////
 // PUBLIC
 ///////////////////////////////////////
 
@@ -59,7 +29,7 @@ path.prototype.incrementSize = function(direction, increment) {
 
 	//Add or increment last block
 	if (this.blocks.length == 0) {
-		newBlock = createNextBlock.call(this, direction, increment);
+		newBlock = this.createNextBlock(direction, increment);
 		this.blocks.push(newBlock);
 	}
 	else {
@@ -68,7 +38,7 @@ path.prototype.incrementSize = function(direction, increment) {
 			lastBlock.incrementSize(increment);
 		}
 		else {
-			newBlock = createNextBlock.call(this, direction, increment);
+			newBlock = this.createNextBlock(direction, increment);
 			this.blocks.push(newBlock);
 		}
 	}
@@ -93,6 +63,32 @@ path.prototype.containsPoint = function(point) {
 	}
 	return false;
 };
+
+path.prototype.createNextBlock = function(direction, increment) {
+	if (direction.x == 0) {
+		width = this.thickness;
+		height = increment;
+	}
+	else {
+		width = increment;
+		height = this.thickness;
+	}
+
+	if (this.blocks.length == 0) {
+		center = {
+			x: this.headStartPosition.x + direction.x * ((width - this.thickness) / 2),
+			y: this.headStartPosition.y + direction.y * ((height - this.thickness) / 2)
+		};
+	}
+	else {
+		center = {
+			x: lastBlock.center.x + this.currentDirection.x * ((lastBlock.getWidth() + width) / 2) + (direction.x * ((width - lastBlock.getWidth()) / 2)),
+			y: lastBlock.center.y + this.currentDirection.y * ((lastBlock.getHeight() + height) / 2) + (direction.y * ((height - lastBlock.getHeight()) / 2))
+		};
+	}
+	newBlock = new Block(center, increment, this.thickness, direction);
+	return newBlock;
+}
 
 module.exports = path;
 
