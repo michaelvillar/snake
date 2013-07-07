@@ -119,7 +119,7 @@ appController.prototype.bindEvents = function() {
       this.me.setDirection({ x:0, y:-1, z:0 });
     else if(e.keyCode == 37) // left
       this.me.setDirection({ x:-1, y:0, z:0 });
-    else if(e.keyCode == 39) // left
+    else if(e.keyCode == 39) // right
       this.me.setDirection({ x:1, y:0, z:0 });
     else if(e.keyCode == 32) // space
       this.boost.enable();
