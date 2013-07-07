@@ -2,6 +2,7 @@ var apiController = require('apiController');
 var hudController = require('hudController');
 var boostModel = require('boostModel');
 var playerModel = require('playerModel');
+var boardModel = require('boardModel');
 
 var SPEED = 10;
 var CAMERA_OFFSET = {
@@ -17,6 +18,10 @@ var LIGHT_OFFSET = {
 
 var appController = function() {
   this.initScene();
+
+  this.board = new boardModel(this.scene);
+  this.board.attach();
+
   this.boost = new boostModel();
 
   this.hud = new hudController(this.boost);
@@ -139,19 +144,6 @@ appController.prototype.initScene = function() {
   this.renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(this.renderer.domElement);
 
-  // Board
-  var boardSize = 60;
-  var boardPlaneGeometry = new THREE.PlaneGeometry(boardSize, boardSize, boardSize / 4, boardSize / 4);
-  var texture = THREE.ImageUtils.loadTexture("/assets/images/grid3.png", new THREE.UVMapping(), function() {
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat = new THREE.Vector2(boardSize / 2, boardSize / 2);
-    var boardMaterial = new THREE.MeshLambertMaterial({ map: texture });
-    var boardMesh = new THREE.Mesh(boardPlaneGeometry, boardMaterial);
-    boardMesh.position.z = -0.3;
-    this.scene.add(boardMesh)
-  }.bind(this));
-
   // Light
   this.pointLight =  new THREE.PointLight(0xFFFFFF);
   this.scene.add(this.pointLight);
@@ -179,6 +171,7 @@ appController.prototype.tick = function() {
   this.me.move(this.me.direction.x * distanceToMove,
                this.me.direction.y * distanceToMove,
                this.me.direction.z * distanceToMove)
+  this.board.updateCenter(this.me.position);
 
   this.moveCameraToPosition(this.me.position, this.camera.position.z == 0);
 

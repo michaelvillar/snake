@@ -1,4 +1,4 @@
-var pathCubeModel = require('./pathCubeModel');
+var pathCubeModel = require('pathCubeModel');
 
 var pathModel = function(scene, color) {
   this.scene = scene;
