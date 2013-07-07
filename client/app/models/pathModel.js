@@ -1,9 +1,4 @@
-var createCube = function(color) {
-  var geometry = new THREE.CubeGeometry(1,1,0.6);
-  var material = new THREE.MeshLambertMaterial({ color: color });
-  var cube = new THREE.Mesh(geometry, material);
-  return cube;
-}
+var pathCubeModel = require('./pathCubeModel');
 
 var pathModel = function(scene, color) {
   this.scene = scene;
@@ -25,39 +20,9 @@ pathModel.prototype.detach = function() {
 
 pathModel.prototype.attachCube = function(direction) {
   this.direction = direction;
-  var cube = {
-    mesh: createCube(this.color),
-    direction: direction
-  };
-  cube.decreaseSize = function(decr) {
-    return this.increaseSize(-decr);
-  }.bind(cube);
-  cube.increaseSize = function(incr) {
-    var scale = this.mesh.scale;
-    var newScale;
-    var translateDirection = ((incr > 0) ? 1 : -1);
-    var sizeToIncrease = incr;
-    if(this.direction.x != 0) {
-      if(scale.x + incr < 0)
-        sizeToIncrease = - scale.x;
-      newScale = new THREE.Vector3(scale.x + sizeToIncrease, 1, 1);
-      this.mesh.translateX(this.direction.x * sizeToIncrease / 2 * translateDirection);
-    }
-    else {
-      if(scale.y + incr < 0)
-        sizeToIncrease = - scale.y;
-      newScale = new THREE.Vector3(1, scale.y + sizeToIncrease, 1);
-      this.mesh.translateY(this.direction.y * sizeToIncrease / 2 * translateDirection);
-    }
-    this.mesh.scale = newScale;
-    return sizeToIncrease;
-  }.bind(cube);
-  cube.isEmpty = function() {
-    return (this.mesh.scale.x == 0 || this.mesh.scale.y == 0);
-  }.bind(cube);
-
-  cube.mesh.scale = new THREE.Vector3(Math.abs(direction.y), Math.abs(direction.x), 1);
-  this.scene.add(cube.mesh);
+  var cube = new pathCubeModel(this.scene, this.color, direction);
+  cube.scale(Math.abs(direction.y), Math.abs(direction.x), 1);
+  cube.attach();
   this.cubes.push(cube);
   return cube.mesh;
 };
@@ -84,7 +49,7 @@ pathModel.prototype.move = function(length) {
       var firstCube = this.cubes[0];
       decreasedSize += Math.abs(firstCube.decreaseSize(shift - decreasedSize));
       if(firstCube.isEmpty()) {
-        this.scene.remove(firstCube.mesh);
+        firstCube.detach();
         this.cubes.splice(0, 1);
       }
     }
