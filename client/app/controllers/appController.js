@@ -71,6 +71,29 @@ appController.prototype.init = function() {
 
   this.api.on('didReceiveObstacle', this.didReceiveObstacle.bind(this));
 
+  // Tmp to debug
+  var tmpBlocks = [];
+  this.api.on('test', function(json) {
+    console.log(json)
+    for(var i in tmpBlocks) {
+      var block = tmpBlocks[i];
+      this.scene.remove(block);
+    }
+    tmpBlocks = [];
+    var blocks = json.blocks;
+    var material = new THREE.MeshLambertMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.5 });
+    for(var i in blocks) {
+      var jsonBlock = blocks[i];
+      var geometry = new THREE.CubeGeometry(jsonBlock.x,jsonBlock.y,0.1);
+      var block = new THREE.Mesh(geometry, material);
+      block.position.x = jsonBlock.center.x;
+      block.position.y = jsonBlock.center.y;
+      block.position.z = 1;
+      this.scene.add(block);
+      tmpBlocks.push(block);
+    }
+  }.bind(this));
+
   this.render();
 
   this.bindEvents();

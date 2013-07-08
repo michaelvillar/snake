@@ -17,6 +17,11 @@ var apiController = function(ip) {
   //// Obstacles
   this.socket.on("obstacle", this.onObstacle.bind(this));
 
+  // Tmp to debug
+  this.socket.on('test', function(json) {
+    this.trigger('test', json);
+  }.bind(this));
+
   // Socket.io Events
   this.socket.on("error", this.didReceiveError.bind(this));
   this.socket.on("connect_failed", this.didFailToConnect.bind(this));
