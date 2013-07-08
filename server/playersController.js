@@ -82,21 +82,26 @@ PlayersController.prototype.collisionWithPlayer = function(player) {
 	if (player.invincible())
 		return null;
 	var otherPlayers = player.otherPlayersInBounds.slice(0);
-	otherPlayers.push(player);
-	var headPoints = player.headPoints();
+	var head = player.head();
 	for (var i in otherPlayers) {
 		var otherPlayer = otherPlayers[i];
 		if (otherPlayer.invincible())
 			continue;
 
 		// Both players die because they hit on the head
-		if (otherPlayer.id != player.id && (otherPlayer.containsPointInHead(headPoints[0]) || otherPlayer.containsPointInHead(headPoints[1]))) 
+		if (otherPlayer.head().intersectsBlock(head)) 
 			return { 'winners' : [],
 					 'loosers' : [player, otherPlayer] };
-		// Player hit someone's path or his own path
-		if (otherPlayer.containsPointInPath(headPoints[0]) || otherPlayer.containsPointInPath(headPoints[1]))
+		// Player hit someone's path
+		if (otherPlayer.path.intersectsBlock(head))
 			return { 'winners' : [otherPlayer],
 					 'loosers' : [player] };
+	}
+	//Player hit their own path
+	var headPoints = player.headPoints();
+	if (player.path.containsPoint(headPoints[0]) || player.path.containsPoint(headPoints[1])) {
+		return { 'winners' : [player],
+				 'loosers' : [player] };
 	}
 	return null;
 };

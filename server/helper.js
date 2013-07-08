@@ -36,7 +36,7 @@ module.exports.randomPositionWith = function(position, radius1, radius2) {
 module.exports.isAnyPlayerInCircleOrPathAtCenter = function(players, circle) {
 	for (var i in players) {
 		var player = players[i];
-		if (circle.containsPoint(player.position) || player.containsPointInPath(circle.center)) {
+		if (circle.containsPoint(player.position) || player.path.containsPoint(circle.center)) {
 			return true;
 		}
 	};

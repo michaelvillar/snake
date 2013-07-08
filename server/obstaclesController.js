@@ -29,9 +29,9 @@ ObstaclesController.prototype.stopSpawningObstacle = function() {
 ObstaclesController.prototype.spawnObstacle = function() {
 	var found = false;
 	while (!found) {
-		var index = Math.round((Math.random() * (this.players.length - 1)));
-		if (index == -1)
+		if (this.players.length == 0)
 			return;
+		var index = Math.round((Math.random() * (this.players.length - 1)));
 		var position = Helper.randomPositionWith(this.players[index].position, 5, 20);
 		var position = board.nearestCellCenterToPosition(position);
 		circle = new Circle(position, 5);

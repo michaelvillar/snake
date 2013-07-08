@@ -1,6 +1,7 @@
 EventEmitter = require('events').EventEmitter;
 Path = require('./path');
-Helper = require('./Helper');
+Helper = require('./helper');
+Block = require('./block');
 
 ///////////////////////////////////////
 // PRIVATE
@@ -76,22 +77,18 @@ Player.prototype.headPoints = function() {
 	return [headPoint1, headPoint2];
 };
 
-Player.prototype.containsPointInPath = function(point) {
-	return this.path.containsPoint(point);
+Player.prototype.smallerHead = function() {
+	var head = new Block(this.position, this.headThickness, this.headThickness, this.direction);
+	head.decrementSize(0.4);
+	return head;
 };
 
-Player.prototype.containsPointInHead = function(point) {
-	var minX = this.position.x - this.headThickness / 2;
-	var maxX = this.position.x + this.headThickness / 2;
-	var minY = this.position.y - this.headThickness / 2;
-	var maxY = this.position.y + this.headThickness / 2;
-	var isInX = point.x >= minX && point.x <= maxX;
-	var isInY = point.y >= minY && point.y <= maxY;
-	return isInX && isInY;
+Player.prototype.head = function() {
+	return new Block(this.position, this.headThickness, this.headThickness, this.direction);
 };
 
 Player.prototype.invincible = function() {
 	return this.direction == null || (this.direction.x == 0 && this.direction.y == 0 && this.direction.z == 0);
-}
+};
 
 module.exports = Player;
