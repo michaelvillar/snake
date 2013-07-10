@@ -10,11 +10,6 @@ function handler (req, res) {
 ///////////////////////////////////////
 ///////////////////////////////////////
 
-var playersController = new PlayersController();
-
-///////////////////////////////////////
-///////////////////////////////////////
-
 io.sockets.on('connection', function (socket) {
-	playersController.addPlayerWithSocket(socket);
+	PlayersController.singleton().addPlayerWithSocket(socket);
 });

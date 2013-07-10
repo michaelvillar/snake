@@ -64,6 +64,15 @@ path.prototype.containsPoint = function(point) {
 	return false;
 };
 
+path.prototype.intersectsBlock = function(blockB) {
+	for (var i in this.blocks) {
+		var blockA = this.blocks[i];
+		if (blockA.intersectsBlock(blockB))
+			return true;
+	}
+	return false;
+};
+
 path.prototype.createNextBlock = function(direction, increment) {
 	if (direction.x == 0) {
 		var width = this.thickness;
