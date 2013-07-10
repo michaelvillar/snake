@@ -14,8 +14,8 @@ var Board = function() {
 
 Board.prototype.nearestCellCenterToPosition = function(position) {
 	var newPosition = {
-		x: Math.round(position.x / this.cellSize.x.toFixed(1)) * this.cellSize.x,
-		y: Math.round(position.y / this.cellSize.y.toFixed(1)) * this.cellSize.y,
+		x: Math.round(position.x / this.cellSize.x.toFixed(1)) * this.cellSize.x + this.cellSize.x / 2,
+		y: Math.round(position.y / this.cellSize.y.toFixed(1)) * this.cellSize.y + this.cellSize.y / 2,
 		z: position.z
 	};
 	return newPosition;
