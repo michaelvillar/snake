@@ -48,25 +48,24 @@ path.prototype.incrementSize = function(headPosition, direction, increment) {
 	}
 
 	//Decrement first block
-	// while (this.blocks.length > 0 && decrement > 0) {
-	// 	var firstBlock = this.blocks[0];
-	// 	var firstDirection = this.blocksDirections[0];
-	// 	var firstBlockLength = Math.abs(firstBlock.x * firstDirection.x) + Math.abs(firstBlock.y * firstDirection.y);
-	// 	var toDecrement = firstBlockLength < decrement ? firstBlockLength : decrement;
-	// 	firstBlock.decrementSize(toDecrement, firstDirection);
-	// 	if (decrement - toDecrement > 0) {
-	// 		this.blocks.splice(0, 1);
-	// 		this.blocksDirections.splice(0, 1);
-	// 	}
-	// 	decrement -= toDecrement;
-	// }
+	while (this.blocks.length > 0 && decrement > 0) {
+		var firstBlock = this.blocks[0];
+		var firstDirection = this.blocksDirections[0];
+		var firstBlockLength = Math.abs(firstBlock.x * firstDirection.x) + Math.abs(firstBlock.y * firstDirection.y);
+		var toDecrement = firstBlockLength < decrement ? firstBlockLength : decrement;
+		firstBlock.decrementSize(toDecrement, firstDirection);
+		if (decrement - toDecrement > 0) {
+			this.blocks.splice(0, 1);
+			this.blocksDirections.splice(0, 1);
+		}
+		decrement -= toDecrement;
+	}
 };
 
 path.prototype.containsPoint = function(point) {
 	for (var i in this.blocks) {
 		var block = this.blocks[i];
 		if (block.containsPoint(point)) {
-			console.log("block ", block , " contains " , point)
 			return true;
 		}
 	}
