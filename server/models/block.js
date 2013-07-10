@@ -1,28 +1,30 @@
 
-var Block = function(position, x, y, z) {
+var Block = function(position, size) {
 	this.position = position;
-	this.x = x;
-	this.y = y;
-	this.z = z;
+	this.size = {
+		x: size.x,
+		y: size.y,
+		z: size.z
+	};
 };
 
 Block.prototype.containsPoint = function(point) {
-	var isInX = (point.x >= (this.position.x - (this.x / 2))) && (point.x <= (this.position.x + (this.x / 2)));
-	var isInY = (point.y >= (this.position.y - (this.y / 2))) && (point.y <= (this.position.y + (this.y / 2)));
+	var isInX = (point.x >= (this.position.x - (this.size.x / 2))) && (point.x <= (this.position.x + (this.size.x / 2)));
+	var isInY = (point.y >= (this.position.y - (this.size.y / 2))) && (point.y <= (this.position.y + (this.size.y / 2)));
 	return isInX && isInY;
 };
 
 Block.prototype.incrementSize = function(increment, direction) {
-	this.x += increment * Math.abs(direction.x);
-	this.y += increment * Math.abs(direction.y);
+	this.size.x += increment * Math.abs(direction.x);
+	this.size.y += increment * Math.abs(direction.y);
 	this.position.x += direction.x * increment / 2
 	this.position.y += direction.y * increment / 2;
 	this.clearCache();
 };
 
 Block.prototype.decrementSize = function(decrement, direction) {
-	this.x -= decrement * Math.abs(direction.x);
-	this.y -= decrement * Math.abs(direction.y);
+	this.size.x -= decrement * Math.abs(direction.x);
+	this.size.y -= decrement * Math.abs(direction.y);
 	this.position.x += direction.x * decrement / 2
 	this.position.y += direction.y * decrement / 2;
 	this.clearCache();
@@ -46,10 +48,10 @@ Block.prototype.intersectsBlock = function(blockB) {
 
 Block.prototype.corners = function() {
 	if (!this._corners) {
-		this._corners = [ { x: this.position.x - this.x / 2, y: this.position.y - this.y / 2 },
-						  { x: this.position.x - this.x / 2, y: this.position.y + this.y / 2 },
-						  { x: this.position.x + this.x / 2, y: this.position.y - this.y / 2 },
-						  { x: this.position.x + this.x / 2, y: this.position.y + this.y / 2 } ];
+		this._corners = [ { x: this.position.x - this.size.x / 2, y: this.position.y - this.size.y / 2 },
+						  { x: this.position.x - this.size.x / 2, y: this.position.y + this.size.y / 2 },
+						  { x: this.position.x + this.size.x / 2, y: this.position.y - this.size.y / 2 },
+						  { x: this.position.x + this.size.x / 2, y: this.position.y + this.size.y / 2 } ];
     }
     return this._corners;
 }

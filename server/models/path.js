@@ -100,7 +100,7 @@ path.prototype.createNextBlock = function(direction, increment) {
 		x: this.headPosition.x + direction.x * ((x / 2 - this.headOffset)),
 		y: this.headPosition.y + direction.y * ((y / 2 - this.headOffset))
 	};
-	var newBlock = new Block(center, x, y, z);
+	var newBlock = new Block(center, {x: x, y: y, z: z});
 	return newBlock;
 }
 

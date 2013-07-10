@@ -79,7 +79,7 @@ Player.prototype.headPoints = function() {
 };
 
 Player.prototype.head = function() {
-	return new Block(this.position, this.z, this.z, this.z);
+	return new Block(this.position, {x: this.z, y: this.z, z: this.z});
 };
 
 Player.prototype.invincible = function() {
