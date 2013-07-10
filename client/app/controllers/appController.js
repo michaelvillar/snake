@@ -283,9 +283,11 @@ appController.prototype.render = function() {
   requestAnimationFrame(function() {
     this.render();
   }.bind(this));
-  this.tick();
-  TWEEN.update();
-  this.renderer.render(this.scene, this.camera);
+  if(!this.paused) {
+    this.tick();
+    TWEEN.update();
+    this.renderer.render(this.scene, this.camera);
+  }
 };
 
 appController.prototype.tick = function() {
@@ -323,4 +325,8 @@ appController.prototype.moveCameraToPosition = function(position, force) {
     this.camera.position[coord] = position[coord] + CAMERA_OFFSET[coord];
     this.pointLight.position[coord] = position[coord] + LIGHT_OFFSET[coord];
   }
+};
+
+appController.prototype.pause = function() {
+  this.paused = true;
 };
