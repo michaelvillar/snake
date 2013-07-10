@@ -113,22 +113,6 @@ appController.prototype.playerDidConnect = function(json) {
   this.trigger('meDidChange');
 
   this.init();
-
-  setInterval(function() {
-    this.didReceiveObstacle({
-      id: Math.round(Math.random() * 1000000),
-      position: {
-        x: this.me.position.x + Math.round(Math.random() * 50 - 25),
-        y: this.me.position.y + Math.round(Math.random() * 50 - 25),
-        z: 1
-      },
-      size: {
-        x: 2,
-        y: 2,
-        z: 2
-      }
-    });
-  }.bind(this), 500);
 };
 
 appController.prototype.playerDidCollision = function(json) {
