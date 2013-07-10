@@ -9,7 +9,7 @@
       var appController = require('appController');
       var squareBot = require('squareBot');
 
-      var app = new appController;
+      var app = new appController({ disableRendering: true });
       var bot = new squareBot(app);
       bot.start();
     </script>

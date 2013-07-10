@@ -26,8 +26,10 @@ stats.domElement.style.left = '0px';
 stats.domElement.style.top = '0px';
 document.body.appendChild( stats.domElement );
 
-var appController = function() {
+var appController = function(options) {
   eventEmitter.call(this);
+
+  this.options = options || {};
 
   this.inited = false;
   this.initScene();
@@ -286,7 +288,8 @@ appController.prototype.render = function() {
   if(!this.paused) {
     this.tick();
     TWEEN.update();
-    this.renderer.render(this.scene, this.camera);
+    if(!this.options.disableRendering)
+      this.renderer.render(this.scene, this.camera);
   }
 };
 
