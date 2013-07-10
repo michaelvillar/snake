@@ -1,6 +1,6 @@
-var Player = require('./player');
-var Helper = require('./helper');
-var Obstacle = require('./obstacle');
+var Player = require('../models/player');
+var Helper = require('../helpers/helper');
+var Obstacle = require('../models/obstacle');
 var ObstaclesController = require('./obstaclesController');
 
 ///////////////////////////////////////
@@ -98,10 +98,6 @@ PlayersController.prototype.collisionWithPlayer = function(player) {
 	//Player hit their own path
 	var headPoints = player.headPoints();
 	if (player.path.containsPoint(headPoints[0]) || player.path.containsPoint(headPoints[1])) {
-		console.log("player.path.containsPoint(headPoints[0]) " , player.path.containsPoint(headPoints[0]))
-		console.log("player.path.containsPoint(headPoints[1]) " , player.path.containsPoint(headPoints[1]))
-		console.log(player.path.blocks);
-		console.log(headPoints);
 		return { 'winners' : [player],
 				 'loosers' : [player] };
 	}

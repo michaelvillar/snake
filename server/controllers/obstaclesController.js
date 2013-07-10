@@ -1,6 +1,6 @@
-var Helper = require('./helper')
-var Obstacle = require('./obstacle');
-var Board = require('./board');
+var Helper = require('../helpers/helper')
+var Obstacle = require('../models/obstacle');
+var Board = require('../models/board');
 var EventEmitter = require('events').EventEmitter;
 
 var board = Board.singleton();

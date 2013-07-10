@@ -1,4 +1,4 @@
-var Player = require('./player');
+var Player = require('../models/player');
 
 module.exports.directionFromPositions = function(position1, position2) {
 	var unNormalizedDirection = {

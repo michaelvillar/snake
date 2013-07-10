@@ -1,6 +1,6 @@
 var app = require('http').createServer(handler);
 var io = require('socket.io').listen(app, {log: false});
-var PlayersController = require('./playersController');
+var PlayersController = require('./controllers/playersController');
 
 app.listen(5000);
 

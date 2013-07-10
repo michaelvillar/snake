@@ -1,6 +1,6 @@
 EventEmitter = require('events').EventEmitter;
 Path = require('./path');
-Helper = require('./helper');
+Helper = require('../helpers/helper');
 Block = require('./block');
 
 ///////////////////////////////////////
