@@ -5,7 +5,11 @@ var Block = require('./block');
 ///////////////////////////////////////
 
 var path = function(headPosition, headOffset) {
-	this.headPosition = headPosition.slice(0);
+	this.headPosition = {
+		x: headPosition.x,
+		y: headPosition.y,
+		z: headPosition.z
+	};
 	this.headOffset = headOffset;
 	this.z = 1;
 	this.maxSize = 25;
