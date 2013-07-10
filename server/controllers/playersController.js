@@ -165,7 +165,9 @@ PlayersController.prototype.startListeningPlayer = function(player) {
 					otherPlayer.otherPlayersInBounds.push(player);
 					//collect path
 					var path = [];
-					player.path.blocks.forEach(function(block) {
+					for (var i in player.path.blocks) {
+						var block = player.path.blocks[i];
+						var blockDirection = player.path.blocksDirection[i];
 						var blockData = {
 							position: block.center,
 							size: {
@@ -173,9 +175,9 @@ PlayersController.prototype.startListeningPlayer = function(player) {
 								height: block.y
 							},
 							direction: block.direction
-						}
+						};
 						path.push(blockData);
-					});
+					}
 					this.sendTo(otherPlayer, "player/enterBounds", {id: player.id, position: player.position, path: path});
 				}
 				//player previously but not currently in bounds
