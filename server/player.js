@@ -32,9 +32,10 @@ Player.prototype = new EventEmitter();
 Player.prototype.startListening = function() {
 	this.socket.on("setPosition", (function(newPosition) {
 		this.direction = Helper.directionFromPositions(this.position, newPosition);
-		if (this.direction.x != 0 || this.direction.y != 0 || this.direction.z != 0)
-			this.path.incrementSize(this.direction, Helper.incrementFromPositions(this.position, newPosition));
-
+		if (this.direction.x != 0 || this.direction.y != 0 || this.direction.z != 0) {
+			var increment = Helper.incrementFromPositions(this.position, newPosition);
+			this.path.incrementSize(this.position, this.direction, increment);
+		}
 		this.position = newPosition;
 		this.emit("didSetPosition");
 	}).bind(this));

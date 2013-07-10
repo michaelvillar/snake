@@ -4,8 +4,8 @@ var Block = require('./block');
 // PUBLIC
 ///////////////////////////////////////
 
-var path = function(headStartPosition, headOffset) {
-	this.headStartPosition = headStartPosition;
+var path = function(headPosition, headOffset) {
+	this.headPosition = headPosition;
 	this.headOffset = headOffset;
 	this.z = 1;
 	this.maxSize = 25;
@@ -14,7 +14,8 @@ var path = function(headStartPosition, headOffset) {
 	this.totalSize = 0;
 };
 
-path.prototype.incrementSize = function(direction, increment) {
+path.prototype.incrementSize = function(headPosition, direction, increment) {
+	this.headPosition = headPosition;
 	var decrement = 0;
 	if (this.maxSize - this.totalSize == 0) {
 		decrement = increment;
@@ -92,20 +93,10 @@ path.prototype.createNextBlock = function(direction, increment) {
 	}
 	var z = this.z;
 
-	if (this.blocks.length == 0) {
-		var center = {
-			x: this.headStartPosition.x + direction.x * ((x - this.z) / 2),
-			y: this.headStartPosition.y + direction.y * ((y - this.z) / 2)
-		};
-	}
-	else {
-		var lastBlock = this.blocks[this.blocks.length - 1];
-		var lastDirection = this.blocksDirections[this.blocksDirections.length - 1];
-		var center = {
-			x: lastBlock.center.x + lastDirection.x * ((lastBlock.x + x) / 2) + (direction.x * (x - lastBlock.x / 2)),
-			y: lastBlock.center.y + lastDirection.y * ((lastBlock.y + y) / 2) + (direction.y * (y - lastBlock.y / 2))
-		};
-	}
+	var center = {
+		x: this.headPosition.x + direction.x * ((x / 2 - this.headOffset)),
+		y: this.headPosition.y + direction.y * ((y / 2 - this.headOffset))
+	};
 	var newBlock = new Block(center, x, y, z);
 	return newBlock;
 }

@@ -87,7 +87,7 @@ PlayersController.prototype.collisionWithPlayer = function(player) {
 			continue;
 
 		// Both players die because they hit on the head
-		if (otherPlayer.head().intersectsBlock(head)) 
+		if (otherPlayer.head().intersectsBlock(head))
 			return { 'winners' : [],
 					 'loosers' : [player, otherPlayer] };
 		// Player hit someone's path
@@ -131,6 +131,8 @@ PlayersController.prototype.startListeningPlayer = function(player) {
 	}).bind(this));
 
 	player.on("didSetPosition", (function() {
+		// this.sendTo(player, "test", {"blocks" : player.path.blocks })
+
 		//Notify players of collision
 		var collision = this.collisionWithPlayer(player);
 		if (collision) {
