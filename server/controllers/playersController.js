@@ -40,7 +40,7 @@ PlayersController.prototype.addPlayerWithSocket = function(socket) {
 	var player = new Player(socket, position);
 	this.players.push(player);
 	if (this.players.length == 1) {
-		this.obstaclesController.startSpawningObstacles();
+		//this.obstaclesController.startSpawningObstacles();
 	}
 	this.sendTo(player, "player", {id: player.id, position: player.position});
 	player.startListening();

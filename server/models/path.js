@@ -55,7 +55,7 @@ path.prototype.incrementSize = function(headPosition, direction, increment) {
 	while (this.blocks.length > 0 && decrement > 0) {
 		var firstBlock = this.blocks[0];
 		var firstDirection = this.blocksDirections[0];
-		var firstBlockLength = Math.abs(firstBlock.x * firstDirection.x) + Math.abs(firstBlock.y * firstDirection.y);
+		var firstBlockLength = Math.abs(firstBlock.size.x * firstDirection.x) + Math.abs(firstBlock.size.y * firstDirection.y);
 		var toDecrement = firstBlockLength < decrement ? firstBlockLength : decrement;
 		firstBlock.decrementSize(toDecrement, firstDirection);
 		if (decrement - toDecrement > 0) {
