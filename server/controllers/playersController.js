@@ -167,14 +167,14 @@ PlayersController.prototype.startListeningPlayer = function(player) {
 					var path = [];
 					for (var i in player.path.blocks) {
 						var block = player.path.blocks[i];
-						var blockDirection = player.path.blocksDirection[i];
+						var blockDirection = player.path.blocksDirections[i];
 						var blockData = {
 							position: block.center,
 							size: {
 								width: block.x,
 								height: block.y
 							},
-							direction: block.direction
+							direction: blockDirection
 						};
 						path.push(blockData);
 					}
