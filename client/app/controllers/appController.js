@@ -86,10 +86,10 @@ appController.prototype.init = function() {
     var material = new THREE.MeshLambertMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.5 });
     for(var i in blocks) {
       var jsonBlock = blocks[i];
-      var geometry = new THREE.CubeGeometry(jsonBlock.x,jsonBlock.y,0.1);
+      var geometry = new THREE.CubeGeometry(jsonBlock.size.x,jsonBlock.size.y,0.1);
       var block = new THREE.Mesh(geometry, material);
-      block.position.x = jsonBlock.center.x;
-      block.position.y = jsonBlock.center.y;
+      block.position.x = jsonBlock.position.x;
+      block.position.y = jsonBlock.position.y;
       block.position.z = 1;
       this.scene.add(block);
       tmpBlocks.push(block);

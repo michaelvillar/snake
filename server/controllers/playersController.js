@@ -40,7 +40,7 @@ PlayersController.prototype.addPlayerWithSocket = function(socket) {
 	var player = new Player(socket, position);
 	this.players.push(player);
 	if (this.players.length == 1) {
-		//this.obstaclesController.startSpawningObstacles();
+		this.obstaclesController.startSpawningObstacles();
 	}
 	this.sendTo(player, "player", {id: player.id, position: player.position});
 	player.startListening();
@@ -124,12 +124,25 @@ PlayersController.prototype.startListeningPlayer = function(player) {
 		};
 		this.sendTo(otherPlayers, "player/disconnect", json);
 		this.removePlayer(player);
+		if (this.players.length == 0)
+			this.obstaclesController.stopSpawningObstacles();
 	}).bind(this));
 
 	player.on("didSetPosition", (function() {
-		// this.sendTo(player, "test", {"blocks" : player.path.blocks })
+		//this.sendTo(player, "test", {"blocks" : player.path.blocks })
 
-		//Notify players of collision
+		//Notify players of collision with obstacle
+		var collision = this.obstaclesController.collisionWithPlayer(player);
+		if (collision) {
+			var json = {
+				loosers: [player.id]
+			};
+			this.sendTo(this.players, "player/collision", json);
+			this.resetPlayer(player);
+			return;
+		}
+
+		//Notify players of collision with player
 		var collision = this.collisionWithPlayer(player);
 		if (collision) {
 			var winners = [];
@@ -148,46 +161,46 @@ PlayersController.prototype.startListeningPlayer = function(player) {
 
 			this.sendTo(this.players, "player/collision", json);
 			this.resetPlayers(collision.loosers);
+			return;
 		}
+
 		//Notify otherPlayers of position and if player enter/leave their bounds
-		else {
-			otherPlayers = this.playersExceptPlayer(player);
-			for (var i in otherPlayers) {
-				var otherPlayer = otherPlayers[i];
-				//player previously in otherPlayer's bounds ?
-				var index = otherPlayer.otherPlayersInBounds.indexOf(player);
+		otherPlayers = this.playersExceptPlayer(player);
+		for (var i in otherPlayers) {
+			var otherPlayer = otherPlayers[i];
+			//player previously in otherPlayer's bounds ?
+			var index = otherPlayer.otherPlayersInBounds.indexOf(player);
 
-				//player currently in otherPlayer's bounds ?
-				var playerInBounds = otherPlayer.boundsContainPoint(player.position);
+			//player currently in otherPlayer's bounds ?
+			var playerInBounds = otherPlayer.boundsContainPoint(player.position);
 
-				//player not previously but currently in bounds
-				if (playerInBounds && index == - 1) {
-					otherPlayer.otherPlayersInBounds.push(player);
-					//collect path
-					var path = [];
-					for (var i in player.path.blocks) {
-						var block = player.path.blocks[i];
-						var blockDirection = player.path.blocksDirections[i];
-						var blockData = {
-							position: block.center,
-							size: {
-								width: block.x,
-								height: block.y
-							},
-							direction: blockDirection
-						};
-						path.push(blockData);
-					}
-					this.sendTo(otherPlayer, "player/enterBounds", {id: player.id, position: player.position, path: path});
+			//player not previously but currently in bounds
+			if (playerInBounds && index == - 1) {
+				otherPlayer.otherPlayersInBounds.push(player);
+				//collect path
+				var path = [];
+				for (var i in player.path.blocks) {
+					var block = player.path.blocks[i];
+					var blockDirection = player.path.blocksDirections[i];
+					var blockData = {
+						position: block.center,
+						size: {
+							width: block.x,
+							height: block.y
+						},
+						direction: blockDirection
+					};
+					path.push(blockData);
 				}
-				//player previously but not currently in bounds
-				else if (!playerInBounds && index != -1) {
-					otherPlayer.otherPlayersInBounds.splice(index, 1);
-					this.sendTo(otherPlayer, "player/leaveBounds", {id: player.id});
-				}
-				else if(playerInBounds && index != -1)
-					this.sendTo(otherPlayer, "player/position", {id: player.id, position: player.position});
+				this.sendTo(otherPlayer, "player/enterBounds", {id: player.id, position: player.position, path: path});
 			}
+			//player previously but not currently in bounds
+			else if (!playerInBounds && index != -1) {
+				otherPlayer.otherPlayersInBounds.splice(index, 1);
+				this.sendTo(otherPlayer, "player/leaveBounds", {id: player.id});
+			}
+			else if(playerInBounds && index != -1)
+				this.sendTo(otherPlayer, "player/position", {id: player.id, position: player.position});
 		}
 	}).bind(this));
 };
@@ -208,17 +221,17 @@ PlayersController.prototype.resetPlayers = function(players) {
 };
 
 PlayersController.prototype.onNewObstacle = function(obstacle) {
-	/*json = {
+	var json = {
 		id: obstacle.id,
-		position: obstacle.position,
-		size: obstacle.size
+		position: obstacle.block.position,
+		size: obstacle.block.size
 	}
 	for (var i in this.players) {
 		var player = this.players[i];
-		if (player.boundsContainPoint(obstacle.position)) {
+		if (player.boundsContainPoint(json.position)) {
 			this.sendTo(player, "obstacle", json);
 		}
-	}*/
+	}
 };
 
 var playersController = null;

@@ -14,7 +14,8 @@ var ObstaclesController = function(players) {
 ObstaclesController.prototype = new EventEmitter();
 
 ObstaclesController.prototype.startSpawningObstacles = function() {
-	this.timer = setInterval(this.spawnObstacle.bind(this), 2000);
+	if (!this.timer)
+		this.timer = setInterval(this.spawnObstacle.bind(this), 2000);
 };
 
 ObstaclesController.prototype.stopSpawningObstacle = function() {
@@ -32,17 +33,27 @@ ObstaclesController.prototype.spawnObstacle = function() {
 		var index = Math.round((Math.random() * (this.players.length - 1)));
 		var position = Helper.randomPositionWith(this.players[index].position, 6, 20);
 		var position = board.nearestCellCenterToPosition(position);
-		found = !Helper.isAnyPlayerNearPosition(this.players, position, 5) //&&
-			  //  !Helper.doesAnyPathIntersectsBlock(this.players, )
+		var obstacle = new Obstacle(position, {x: 1, y: 1, z: 1});
+		found = !Helper.isAnyPlayerNearPosition(this.players, position, 5) &&
+			  	!Helper.doesAnyPathIntersectsBlock(this.players, obstacle.block)
 	}
-	var obstacle = new Obstacle(position);
 	this.obstacles.push(obstacle);
 	this.emit("newObstacle", obstacle);
 };
 
 ObstaclesController.prototype.obstaclesForPlayer = function(player) {
 
-}
+};
+
+ObstaclesController.prototype.collisionWithPlayer = function(player) {
+	var head = player.head();
+	for (var i in this.obstacles) {
+		var obstacle = this.obstacles[i];
+		if (head.intersectsBlock(obstacle.block))
+			return {obstacle: obstacle};
+	}
+	return null;
+};
 
 
 var obstaclesController = null;
