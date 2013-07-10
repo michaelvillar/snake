@@ -1,5 +1,4 @@
 var Player = require('./player');
-var Circle = require('./circle');
 var Helper = require('./helper');
 var Obstacle = require('./obstacle');
 var ObstaclesController = require('./obstaclesController');
@@ -32,9 +31,8 @@ PlayersController.prototype.addPlayerWithSocket = function(socket) {
 			var index = Math.round(Math.random() * (this.players.length - 1));
 			var otherPlayer = this.players[index];
 			position = Helper.randomPositionWith(otherPlayer.position, 10, 20);
-			var newPlayerCircle = new Circle(position, 4);
 
-			foundPosition = !Helper.isAnyPlayerInCircleOrPathAtCenter(this.playersExceptPlayer(player), newPlayerCircle);
+			foundPosition = !Helper.isAnyPlayerNearPosition(this.playersExceptPlayer(player), position, 10);
 		}
 	}
 
@@ -100,6 +98,10 @@ PlayersController.prototype.collisionWithPlayer = function(player) {
 	//Player hit their own path
 	var headPoints = player.headPoints();
 	if (player.path.containsPoint(headPoints[0]) || player.path.containsPoint(headPoints[1])) {
+		console.log("player.path.containsPoint(headPoints[0]) " , player.path.containsPoint(headPoints[0]))
+		console.log("player.path.containsPoint(headPoints[1]) " , player.path.containsPoint(headPoints[1]))
+		console.log(player.path.blocks);
+		console.log(headPoints);
 		return { 'winners' : [player],
 				 'loosers' : [player] };
 	}
@@ -169,8 +171,8 @@ PlayersController.prototype.startListeningPlayer = function(player) {
 						var blockData = {
 							position: block.center,
 							size: {
-								width: block.getWidth(),
-								height: block.getHeight()
+								width: block.x,
+								height: block.y
 							},
 							direction: block.direction
 						}
@@ -206,7 +208,7 @@ PlayersController.prototype.resetPlayers = function(players) {
 };
 
 PlayersController.prototype.onNewObstacle = function(obstacle) {
-	json = {
+	/*json = {
 		id: obstacle.id,
 		position: obstacle.position,
 		size: obstacle.size
@@ -216,7 +218,7 @@ PlayersController.prototype.onNewObstacle = function(obstacle) {
 		if (player.boundsContainPoint(obstacle.position)) {
 			this.sendTo(player, "obstacle", json);
 		}
-	}
+	}*/
 };
 
 var playersController = null;

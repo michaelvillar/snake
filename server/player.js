@@ -20,8 +20,8 @@ var Player = function(socket, position) {
 	this.socket = socket;
 	this.id = nextId();
 	this.position = position;
-	this.headThickness = 1;
-	this.path = new Path(this.position, this.headThickness / 2);
+	this.z = 1;
+	this.path = new Path(this.position, this.z / 2);
 	this.bounds = null;
 	this.direction = null;
 	this.otherPlayersInBounds = [];
@@ -65,26 +65,20 @@ Player.prototype.boundsContainPoint = function(point) {
 
 Player.prototype.headPoints = function() {
 	var headPoint1 = {
-		x: this.position.x + (this.direction.x * this.headThickness / 2) + (this.direction.y * this.headThickness / 2),
-		y: this.position.y + (this.direction.y * this.headThickness / 2) + (this.direction.x * this.headThickness / 2),
+		x: this.position.x + (this.direction.x * this.z / 2) + (this.direction.y * this.z / 2),
+		y: this.position.y + (this.direction.y * this.z / 2) + (this.direction.x * this.z / 2),
 		z: 0
 	}
 	var headPoint2 = {
-		x: this.position.x + (this.direction.x * this.headThickness / 2) - (this.direction.y * this.headThickness / 2),
-		y: this.position.y + (this.direction.y * this.headThickness / 2) - (this.direction.x * this.headThickness / 2),
+		x: this.position.x + (this.direction.x * this.z / 2) - (this.direction.y * this.z / 2),
+		y: this.position.y + (this.direction.y * this.z / 2) - (this.direction.x * this.z / 2),
 		z: 0
 	}
 	return [headPoint1, headPoint2];
 };
 
-Player.prototype.smallerHead = function() {
-	var head = new Block(this.position, this.headThickness, this.headThickness, this.direction);
-	head.decrementSize(0.4);
-	return head;
-};
-
 Player.prototype.head = function() {
-	return new Block(this.position, this.headThickness, this.headThickness, this.direction);
+	return new Block(this.position, this.z, this.z, this.z);
 };
 
 Player.prototype.invincible = function() {

@@ -1,5 +1,4 @@
 var Player = require('./player');
-var Circle = require('./circle');
 
 module.exports.directionFromPositions = function(position1, position2) {
 	var unNormalizedDirection = {
@@ -33,12 +32,41 @@ module.exports.randomPositionWith = function(position, radius1, radius2) {
 	return randomPosition;
 };
 
-module.exports.isAnyPlayerInCircleOrPathAtCenter = function(players, circle) {
+module.exports.isAnyPlayerNearPosition = function(players, position, distance) {
 	for (var i in players) {
 		var player = players[i];
-		if (circle.containsPoint(player.position) || player.path.containsPoint(circle.center)) {
+		var distanceInBetween = Math.sqrt(Math.pow((position.x - player.x), 2) + Math.pow((position.y - player.y), 2));
+		if (distanceInBetween < distance) {
 			return true;
 		}
 	};
 	return false;
 };
+
+module.exports.isAnyPlayerNearPositions = function(players, positions, distance) {
+	for (var i in positions) {
+		var position = positions[i];
+		if (this.isAnyPlayerNearPosition(players, position, distance))
+			return true;
+	}
+	return false;
+};
+
+module.exports.doesAnyPathIntersectsBlock = function(players, block) {
+	for (var i in players) {
+		var player = players[i];
+		if (player.path.intersectsBlock(block)) {
+			return true;
+		}
+	};
+	return false;
+};
+
+module.exports.doesAnyPathIntersectsBlocks = function(players, blocks) {
+	for (var i in blocks) {
+		var block = blocks[i];
+		if (this.doesAnyPathIntersectsBlock(players, block))
+			return true;
+	}
+	return false;
+}
