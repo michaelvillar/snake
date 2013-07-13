@@ -67,6 +67,10 @@ Block.prototype.equals = function(block) {
 		   this.size.y == block.size.y
 };
 
+Block.prototype.horizontalArea = function() {
+	return this.size.x * this.size.y;
+} ;
+
 Block.prototype.intersectionWithBlockOfSameSize = function(blockB) {
 	var blockA = this;
 	var cornersA = blockA.corners();
@@ -94,6 +98,11 @@ Block.prototype.intersectionWithBlockOfSameSize = function(blockB) {
 	if (inCornersA.length == 1) {
 		var cornerA = inCornersA[0];
 		var cornerB = inCornersB[0];
+	}
+
+	//4 points intersection
+	if (inCornersA.length == 4) {
+		return this;
 	}
 
 	//2 points intersection
