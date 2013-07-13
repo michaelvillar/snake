@@ -1,3 +1,4 @@
+var Block = require('./block');
 
 var Board = function() {
 	this.origin = {
@@ -19,6 +20,17 @@ Board.prototype.nearestCellCenterToPosition = function(position) {
 		z: position.z
 	};
 	return newPosition;
+};
+
+Board.prototype.occupiedBlocks = function(players) {
+	var blocks = [];
+	for (var i in players) {
+		var player = players[i];
+		var block = new Block(player.position, {x: 30, y: 30, z: 1});
+		blocks.push(block);
+	}
+
+	return blocks;
 };
 
 var board = null;
