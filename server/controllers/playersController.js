@@ -2,10 +2,13 @@ var Player = require('../models/player');
 var Helper = require('../helpers/helper');
 var Obstacle = require('../models/obstacle');
 var ObstaclesController = require('./obstaclesController');
+var Board = require('../models/board');
 
 ///////////////////////////////////////
 // PRIVATE
 ///////////////////////////////////////
+
+var board = Board.singleton();
 
 ///////////////////////////////////////
 // PUBLIC
@@ -30,9 +33,12 @@ PlayersController.prototype.addPlayerWithSocket = function(socket) {
 		while (!foundPosition) {
 			var index = Math.round(Math.random() * (this.players.length - 1));
 			var otherPlayer = this.players[index];
-			position = Helper.randomPositionWith(otherPlayer.position, 10, 20);
+			var innerBlock = new Block(otherPlayer.position, {x: 20, y: 20, z: 1});
+			var outerBlock = new Block(otherPlayer.position, {x: 40, y: 40, z: 1});
+			position = board.randomPositionWithBlocks(innerBlock, outerBlock);
 
-			foundPosition = !Helper.isAnyPlayerNearPosition(this.playersExceptPlayer(player), position, 10);
+			foundPosition = !Helper.isAnyPlayerNearPosition(this.playersExceptPlayer(player), position, 10) &&
+							!this.obstaclesController.obstaclesObject[position.x + "," + position.y];
 		}
 	}
 
@@ -228,9 +234,7 @@ PlayersController.prototype.onNewObstacle = function(obstacle) {
 	}
 	for (var i in this.players) {
 		var player = this.players[i];
-		if (player.boundsContainPoint(json.position)) {
-			this.sendTo(player, "obstacle", json);
-		}
+		this.sendTo(player, "obstacle", json);
 	}
 };
 
