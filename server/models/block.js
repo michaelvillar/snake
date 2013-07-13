@@ -101,7 +101,7 @@ Block.prototype.intersectionWithBlockOfSameSize = function(blockB) {
 	}
 
 	//4 points intersection
-	if (inCornersA.length == 4) {
+	else if (inCornersA.length == 4) {
 		return this;
 	}
 
