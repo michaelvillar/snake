@@ -32,6 +32,10 @@ module.exports.randomPositionWith = function(position, radius1, radius2) {
 	return randomPosition;
 };
 
+module.exports.randomPositionWithBlocks = function(innerBlock, outerBlock) {
+
+};
+
 module.exports.isAnyPlayerNearPosition = function(players, position, distance) {
 	for (var i in players) {
 		var player = players[i];
