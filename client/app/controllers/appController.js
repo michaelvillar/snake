@@ -120,11 +120,11 @@ appController.prototype.playerDidCollision = function(json) {
   var winnersId = json.winners;
   var loosersId = json.loosers;
   if(this.me && loosersId.indexOf(this.me.id) != -1) {
-    if(winnersId.indexOf(this.me.id) != -1)
+    if(winnersId && winnersId.indexOf(this.me.id) != -1)
       // Collision with myself
       this.score.increment(-15);
     else
-      // Someone killed me
+      // Someone killed me or got into an obstacle
       this.score.increment(-10);
     this.me.destroy();
     this.me = null;
@@ -143,7 +143,7 @@ appController.prototype.playerDidCollision = function(json) {
       this.deletePlayerForId(looserId);
     }
 
-    if(winnersId.indexOf(this.me.id) != -1) {
+    if(winnersId && winnersId.indexOf(this.me.id) != -1) {
       this.score.increment(10);
       // Reset Boost
       this.boost.fill();
@@ -189,10 +189,15 @@ appController.prototype.playerDidLeaveBounds = function(json) {
 appController.prototype.didReceiveObstacle = function(json) {
   var obstacle = this.obstacles[json.id];
   if(!obstacle) {
-    obstacle = new obstacleModel(this.scene, json.position, json.size);
+    obstacle = new obstacleModel(this.scene, json.id, json.position, json.size, json.createdSince, json.timeToLive);
+    obstacle.on('obstacleDidDisappear', this.obstacleDidDisappear.bind(this));
     obstacle.appear();
     this.obstacles[json.id] = obstacle;
   }
+};
+
+appController.prototype.obstacleDidDisappear = function(obstacle) {
+  delete this.obstacles[obstacle.id];
 };
 
 // Private Methods
