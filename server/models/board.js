@@ -26,7 +26,7 @@ Board.prototype.occupiedBlocks = function(players) {
 	var blocks = [];
 	for (var i in players) {
 		var player = players[i];
-		var block = new Block(player.position, {x: 200, y: 200, z: 1});
+		var block = new Block(player.position, {x: 80, y: 80, z: 1});
 		blocks.push(block);
 	}
 

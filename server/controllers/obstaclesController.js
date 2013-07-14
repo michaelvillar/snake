@@ -18,6 +18,7 @@ var ObstaclesController = function(players) {
 	this.obstaclesObject = {};
 	this.obstaclesArray = [];
 	this.obstaclesToAreaRatio = 0;
+	this.obstaclesToAreaMaxRatio = 0.03;
 };
 
 ObstaclesController.prototype = new EventEmitter();
@@ -36,6 +37,10 @@ ObstaclesController.prototype.stopSpawningObstacles = function() {
 		clearInterval(this.areaTimer);
 		this.timer = null;
 		this.areaTimer = null;
+		this.obstaclesArray = [];
+		this.obstaclesObject = {};
+		this.obstaclesInArea = [];
+		this.obstaclesToAreaRatio = 0;
 	}
 };
 
@@ -73,7 +78,7 @@ ObstaclesController.prototype.refreshObstaclesData = function() {
 };
 
 ObstaclesController.prototype.removeObstacle = function(obstacle) {
-	this.obstaclesObject[obstacle.block.position.x + "," + obstacle.block.position.y] = null;
+	delete this.obstaclesObject[obstacle.block.position.x + "," + obstacle.block.position.y];
 	var index = this.obstaclesArray.indexOf(obstacle);
 	if (index != -1)
 		this.obstaclesArray.splice(index, 1);
@@ -86,10 +91,10 @@ ObstaclesController.prototype.spawnObstacles = function() {
 	this.occupiedBlocks = board.occupiedBlocks(this.players);
 	this.obstaclesToAreaRatio = this.obstaclesInArea.length.toFixed(4) * 4 / this.occupiedArea.toFixed(4);
 	//console.log(this.obstaclesToAreaRatio);
-	if (this.obstaclesToAreaRatio >= 0.05)
+	if (this.obstaclesToAreaRatio >= this.obstaclesToAreaMaxRatio)
 		return;
 
-	var numberOfObstaclesToAdd = Math.round((0.05 * this.occupiedArea / 4) - (this.obstaclesInArea.length));
+	var numberOfObstaclesToAdd = Math.round((this.obstaclesToAreaMaxRatio * this.occupiedArea / 4) - (this.obstaclesInArea.length));
 	var randomNumberOfObstacles = Math.round(Math.random() * numberOfObstaclesToAdd); 
 
 	for (var i = 0; i < randomNumberOfObstacles; i++){
@@ -99,7 +104,7 @@ ObstaclesController.prototype.spawnObstacles = function() {
 		this.obstaclesObject[obstacle.block.position.x + "," + obstacle.block.position.y] = obstacle;
 
 		//Plan deletion
-		var randomTime = Math.round(Math.random() * 5000 + 5000);
+		var randomTime = Math.round(Math.random() * 5000 + 15000);
 		obstacle.creationTime = new Date().getTime()
 		obstacle.deletionTime = obstacle.creationTime + randomTime;
 		setTimeout(this.removeObstacle.bind(this, obstacle), randomTime);
@@ -114,7 +119,7 @@ ObstaclesController.prototype.newObstacle = function() {
 	while (!found) {
 		var index = Math.round((Math.random() * (this.occupiedBlocks.length - 1)));
 		var outerBlock = this.occupiedBlocks[index];
-		var innerBlock = new Block(outerBlock.position, {x: 10, y: 10, z: 1});
+		var innerBlock = new Block(outerBlock.position, {x: 9, y: 9, z: 1});
 		var position = board.randomPositionWithBlocks(innerBlock, outerBlock);
 		var height = Math.round(Math.random() * 4 + 1);
 		var obstacle = new Obstacle(position, {x: 2, y: 2, z: height});

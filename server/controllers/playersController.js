@@ -23,8 +23,8 @@ var PlayersController = function() {
 PlayersController.prototype.addPlayerWithSocket = function(socket) {
 	//Find a position near a player
 	var position = {
-		x: 0,
-		y: 0,
+		x: 1,
+		y: 1,
 		z: 0,
 	};
 
@@ -49,6 +49,22 @@ PlayersController.prototype.addPlayerWithSocket = function(socket) {
 		this.obstaclesController.startSpawningObstacles();
 	}
 	this.sendTo(player, "player", {id: player.id, position: player.position});
+
+	//Send all obstacles
+	var now = new Date().getTime();
+	for (var i in this.obstaclesController.obstaclesArray) {
+		var obstacle = this.obstaclesController.obstaclesArray[i];
+		var json = {
+			id: obstacle.id,
+			position: obstacle.block.position,
+			size: obstacle.block.size,
+			timeToLive: obstacle.deletionTime - now,
+			createdSince: now - obstacle.creationTime
+		}
+		this.sendTo(player, "obstacle", json);
+	};
+
+	//
 	player.startListening();
 	this.startListeningPlayer(player);
 };
