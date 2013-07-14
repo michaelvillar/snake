@@ -227,10 +227,13 @@ PlayersController.prototype.resetPlayers = function(players) {
 };
 
 PlayersController.prototype.onNewObstacle = function(obstacle) {
+	var now = new Date().getTime();
 	var json = {
 		id: obstacle.id,
 		position: obstacle.block.position,
-		size: obstacle.block.size
+		size: obstacle.block.size,
+		timeToLive: obstacle.deletionTime - now,
+		createdSince: now - obstacle.creationTime
 	}
 	for (var i in this.players) {
 		var player = this.players[i];

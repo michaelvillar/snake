@@ -90,8 +90,7 @@ ObstaclesController.prototype.spawnObstacles = function() {
 
 	var numberOfObstaclesToAdd = Math.round((0.05 * this.occupiedArea / 4) - (this.obstaclesInArea.length));
 	var randomNumberOfObstacles = Math.round(Math.random() * numberOfObstaclesToAdd); 
-	//console.log("to add:", numberOfObstaclesToAdd);
-	//console.log("random:", randomNumberOfObstacles);
+
 	for (var i = 0; i < randomNumberOfObstacles; i++){
 		var obstacle = this.newObstacle();
 		this.obstaclesInArea.push(obstacle);
@@ -99,10 +98,10 @@ ObstaclesController.prototype.spawnObstacles = function() {
 		this.obstaclesObject[obstacle.block.position.x + "," + obstacle.block.position.y] = obstacle;
 
 		//Plan deletion
-		//var randomTime = Math.round(Math.random() * 5000 + 5000);
-		//obstacle.creationTime = Date.
-		//obstacle.deletionTime = 
-		//setTimeout(this.removeObstacle.bind(this, obstacle), randomTime);
+		var randomTime = Math.round(Math.random() * 5000 + 5000);
+		obstacle.creationTime = new Date().getTime()
+		obstacle.deletionTime = obstacle.creationTime + randomTime;
+		setTimeout(this.removeObstacle.bind(this, obstacle), randomTime);
 		this.emit("newObstacle", obstacle);
 	}
 };

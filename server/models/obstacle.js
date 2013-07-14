@@ -10,8 +10,8 @@ function nextId() {
 var Obstacle = function(position, size) {
 	this.id = nextId();
 	this.block = new Block(position, size);
-	this.creationTime = null;
 	this.deletionTime = null;
+	this.creationTime = null;
 };
 
 module.exports = Obstacle;
