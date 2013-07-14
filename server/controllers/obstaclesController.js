@@ -51,7 +51,8 @@ ObstaclesController.prototype.refreshObstaclesData = function() {
 		for (var j in compareBlocks) {
 			var compareBlock = compareBlocks[j];
 			var intersectionBlock = block.intersectionWithBlockOfSameSize(compareBlock);
-			occupiedArea -= intersectionBlock.horizontalArea();
+			if (intersectionBlock)
+				occupiedArea -= intersectionBlock.horizontalArea();
 		}
 		compareBlocks.splice(0, 1);
 	}
