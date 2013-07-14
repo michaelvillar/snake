@@ -17,6 +17,8 @@ var closePlayerHud = function() {
   this.svg.style.position = 'absolute';
   this.svg.style.top = '0px';
   this.svg.style.left = '0px';
+  this.svg.style.width = '50px';
+  this.svg.style.height = '50px';
   this.svg.style["-webkit-transform-origin"] = "50% 50%";
 
   this.path = document.createElementNS(xmlns, 'path');

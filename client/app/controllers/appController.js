@@ -6,6 +6,7 @@ var playerModel = require('playerModel');
 var obstacleModel = require('obstacleModel');
 var boardModel = require('boardModel');
 var eventEmitter = require('eventEmitter');
+var convert = require('convert');
 
 var SPEED = 10;
 var CAMERA_OFFSET = {
@@ -13,6 +14,7 @@ var CAMERA_OFFSET = {
   y: -15,
   z: 20
 };
+var CAMERA_ROTATION = 0.5;
 var LIGHT_OFFSET = {
   x: 0,
   y: -5,
@@ -24,7 +26,7 @@ var stats = new Stats();
 stats.domElement.style.position = 'absolute';
 stats.domElement.style.left = '0px';
 stats.domElement.style.top = '0px';
-document.body.appendChild( stats.domElement );
+// document.body.appendChild( stats.domElement );
 
 var appController = function(options) {
   eventEmitter.call(this);
@@ -76,7 +78,6 @@ appController.prototype.init = function() {
   // Tmp to debug
   var tmpBlocks = [];
   this.api.on('test', function(json) {
-    console.log(json)
     for(var i in tmpBlocks) {
       var block = tmpBlocks[i];
       this.scene.remove(block);
@@ -103,7 +104,7 @@ appController.prototype.init = function() {
 
 // API Handler
 appController.prototype.playerDidConnect = function(json) {
-  this.api.setBounds(150, 150);
+  this.api.setBounds(1500, 1500);
 
   this.me = new playerModel(this.scene, json, true);
   this.me.setPosition(json.position.x, json.position.y, json.position.z);
@@ -195,6 +196,30 @@ appController.prototype.didReceiveObstacle = function(json) {
 };
 
 // Private Methods
+appController.prototype.updateClosePlayers = function() {
+  var polygon = convert.screenRectangleTo3DPolygon(this.camera);
+  var center = convert.screenPointTo3DPoint(new THREE.Vector3(0.5,0.5,1), this.camera);
+
+  var outPlayers = [];
+  for(var id in this.players) {
+    var player = this.players[id];
+    var intersection = convert.intersectionBetweenPolygonAndLine(polygon, { points: [ center, player.getPosition() ]}, player.getPosition());
+    if(intersection) {
+       var intersectionInScreen = convert.object3DPositionTo2DScreenPosition(intersection, this.camera);
+       var distanceFromPlayer = convert.distanceBetweenPoint(player.getPosition(), this.me.getPosition());
+       var distanceBetweenIntersectionAndMe = convert.distanceBetweenPoint(intersection, this.me.getPosition());
+       var extraDistance = distanceFromPlayer - distanceBetweenIntersectionAndMe;
+       var size = 1 - (Math.min(extraDistance, 100) / 100);
+       outPlayers.push({
+         player: player,
+         intersectionInScreen: intersectionInScreen,
+         size: size
+       });
+    }
+  }
+  this.hud.setOutOfScreenPlayers(this.me, outPlayers);
+};
+
 appController.prototype.getOrCreatePlayerForId = function(id) {
   var player = this.players[id];
   if(!player) {
@@ -248,7 +273,7 @@ appController.prototype.initScene = function() {
 
   // Camera
   this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  this.camera.rotation.x = 0.5;
+  this.camera.rotation.x = CAMERA_ROTATION;
 
   // Render
   this.renderer = new THREE.WebGLRenderer({ antialias: false });
@@ -256,13 +281,16 @@ appController.prototype.initScene = function() {
   document.body.appendChild(this.renderer.domElement);
   window.addEventListener('resize', function() {
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    this.camera.rotation.x = 0.5;
+    this.camera.rotation.x = CAMERA_ROTATION;
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   }.bind(this));
 
   // Light
   this.pointLight =  new THREE.PointLight(0xFFFFFF);
   this.scene.add(this.pointLight);
+
+  // Projector
+  this.projector = new THREE.Projector();
 };
 
 appController.prototype.render = function() {
@@ -274,6 +302,7 @@ appController.prototype.render = function() {
     TWEEN.update();
     if(!this.options.disableRendering)
       this.renderer.render(this.scene, this.camera);
+    this.updateClosePlayers();
   }
 };
 
