@@ -14,9 +14,6 @@ var apiController = function(ip) {
   this.socket.on("player/enterBounds", this.onPlayerDidEnterBounds.bind(this));
   this.socket.on("player/leaveBounds", this.onPlayerDidLeaveBounds.bind(this));
 
-  //// Obstacles
-  this.socket.on("obstacle", this.onObstacle.bind(this));
-
   // Tmp to debug
   this.socket.on('test', function(json) {
     this.trigger('test', json);
@@ -77,8 +74,4 @@ apiController.prototype.onPlayerDidEnterBounds = function(json) {
 
 apiController.prototype.onPlayerDidLeaveBounds = function(json) {
   this.trigger('playerDidLeaveBounds', json);
-};
-
-apiController.prototype.onObstacle = function(json) {
-  this.trigger('didReceiveObstacle', json);
 };

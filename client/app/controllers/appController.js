@@ -3,7 +3,6 @@ var hudController = require('hudController');
 var boostModel = require('boostModel');
 var scoreModel = require('scoreModel');
 var playerModel = require('playerModel');
-var obstacleModel = require('obstacleModel');
 var boardModel = require('boardModel');
 var eventEmitter = require('eventEmitter');
 var convert = require('convert');
@@ -72,8 +71,6 @@ appController.prototype.init = function() {
   this.api.on('playerDidCollision', this.playerDidCollision.bind(this));
   this.api.on('playerDidEnterBounds', this.playerDidEnterBounds.bind(this));
   this.api.on('playerDidLeaveBounds', this.playerDidLeaveBounds.bind(this));
-
-  this.api.on('didReceiveObstacle', this.didReceiveObstacle.bind(this));
 
   // Tmp to debug
   var tmpBlocks = [];
@@ -184,20 +181,6 @@ appController.prototype.playerDidEnterBounds = function(json) {
 
 appController.prototype.playerDidLeaveBounds = function(json) {
   this.deletePlayerForId(json.id, false);
-};
-
-appController.prototype.didReceiveObstacle = function(json) {
-  var obstacle = this.obstacles[json.id];
-  if(!obstacle) {
-    obstacle = new obstacleModel(this.scene, json.id, json.position, json.size, json.createdSince, json.timeToLive);
-    obstacle.on('obstacleDidDisappear', this.obstacleDidDisappear.bind(this));
-    obstacle.appear();
-    this.obstacles[json.id] = obstacle;
-  }
-};
-
-appController.prototype.obstacleDidDisappear = function(obstacle) {
-  delete this.obstacles[obstacle.id];
 };
 
 // Private Methods
